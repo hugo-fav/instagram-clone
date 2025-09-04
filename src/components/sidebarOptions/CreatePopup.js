@@ -5,12 +5,12 @@ const BaseItem = styled.button`
   all: unset;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 10px 12px;
   font-size: 0.95rem;
   font-weight: 100;
   cursor: pointer;
   border-radius: 8px;
-  transition: background 0.2s ease;
 
   &:hover {
     background: #4e4e4eff;
@@ -26,11 +26,15 @@ const ListItem = styled.div`
   flex-direction: column;
   width: 240px;
   padding: 9px;
-  margin: 12px 0;
-
+  margin: 0; /* remove large top/bottom margin */
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#292929"};
   border-radius: 12px;
   transition: all 0.2s ease;
+
+  position: absolute; /* position relative to parent or overlay */
+  bottom: 9rem;
+  left: 0;
+  z-index: 1000;
 `;
 
 const NavItem = styled.nav`

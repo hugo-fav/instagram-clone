@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { Activity, MailWarning, Moon, Save, Settings } from "lucide-react";
-import styled from "styled-components";
+import { supabase } from "@/libs/supabseClient";
 
-const BaseItem = styled.button`
+import styled from "styled-components";
+import Modal from "@/components/Modal";
+import Auth from "@/logic/Auth";
+
+const ButtonItem = styled.button`
   all: unset;
   display: flex;
   align-items: center;
@@ -26,7 +31,7 @@ const ListItem = styled.div`
   flex-direction: column;
   width: 240px;
   padding: 9px;
-  margin: 12px 0;
+  margin: 3.2rem 0;
 
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#292929"};
   border-radius: 12px;
@@ -38,45 +43,59 @@ const NavItem = styled.nav`
   flex-direction: column;
 `;
 
-const Item = styled(BaseItem)``;
-
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #3a3a3a;
   margin: 8px 0;
 `;
 
-const SecItem = styled(BaseItem)`
+const SecButton = styled(ButtonItem)`
   padding: 10px 1.5rem;
   margin: 4px 0;
 `;
 
-function MorePopupSlide() {
+export default function MorePopupSlide() {
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      alert("Logged out successfully!");
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const [showAuth, setShowAuth] = useState(false);
+
   return (
     <ListItem>
       <NavItem>
-        <Item>
+        <ButtonItem>
           <Settings size={20} /> <span>Settings</span>
-        </Item>
-        <Item>
+        </ButtonItem>
+        <ButtonItem>
           <Activity size={20} /> <span>Activity</span>
-        </Item>
-        <Item>
+        </ButtonItem>
+        <ButtonItem>
           <Save size={20} /> <span>Saved</span>
-        </Item>
-        <Item>
+        </ButtonItem>
+        <ButtonItem>
           <Moon size={20} /> <span>Switch Appearance</span>
-        </Item>
-        <Item>
+        </ButtonItem>
+        <ButtonItem>
           <MailWarning size={20} /> <span>Report a Problem</span>
-        </Item>
+        </ButtonItem>
       </NavItem>
 
       <Divider />
-      <SecItem>Switch accounts</SecItem>
-      <SecItem>Log out</SecItem>
+      <SecButton onClick={() => setShowAuth(true)}>Switch accounts</SecButton>
+      <SecButton onClick={handleLogout}>Log out</SecButton>
+
+      {showAuth && (
+        <Modal onClose={() => setShowAuth(false)}>
+          <Auth />
+        </Modal>
+      )}
     </ListItem>
   );
 }
-
-export default MorePopupSlide;

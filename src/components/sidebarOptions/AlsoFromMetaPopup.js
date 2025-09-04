@@ -26,7 +26,7 @@ const ListItem = styled.div`
   flex-direction: column;
   width: 240px;
   padding: 9px;
-  margin: 12px 0;
+  margin: 4.3rem 0;
 
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#292929"};
   border-radius: 12px;

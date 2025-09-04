@@ -8,20 +8,19 @@ function Sidebar() {
   const [isMobileMode, setIsMobileMode] = useState(false);
   const [activeComponent, setActiveComponent] = useState(null);
   const [activeMenu, setActiveMenu] = useState("home");
-  const [openOptionLeft, setOpenOptionLeft] = useState(false);
+  const [openOptionLeft, setOpenOptionLeft] = useState("22px");
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 1248) {
         setIsMobileMode(true);
-        setOpenOptionLeft("70px"); // position when in mobile view
+        setOpenOptionLeft("70px");
       } else {
         setIsMobileMode(false);
-        setOpenOptionLeft("22px"); // position when in desktop view
+        setOpenOptionLeft("22px");
       }
     };
-
-    handleResize(); // run once on mount
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -36,6 +35,10 @@ function Sidebar() {
     }
   };
 
+  const togglePopupOnly = (component) => {
+    setActiveComponent((prev) => (prev === component ? null : component));
+  };
+
   const closeComponent = (component) => {
     if (activeComponent === component) {
       setActiveComponent(null);
@@ -48,13 +51,13 @@ function Sidebar() {
         isMobileMode={isMobileMode}
         activeMenu={activeMenu}
         setActiveMenu={setActiveMenu}
-        setActiveComponent={setActiveComponent}
         toggleComponent={toggleComponent}
-        closeComponent={closeComponent}
+        togglePopupOnly={togglePopupOnly}
       />
       <BarOptions
         activeComponent={activeComponent}
         openOptionLeft={openOptionLeft}
+        closeComponent={closeComponent}
       />
     </>
   );
