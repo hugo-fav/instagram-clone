@@ -174,7 +174,7 @@ export default function EditProfile() {
 }
 
 /* ----------------- STYLED COMPONENTS ----------------- */
-const Container = styled.div`
+const Container = styled.div` 
   max-width: 450px;
   margin: 2rem auto;
   padding: 2rem;

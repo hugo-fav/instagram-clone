@@ -9,7 +9,7 @@ function page() {
         fontSize: "24px",
       }}
     >
-      no users yet
+      no users post yet
     </div>
   );
 }
