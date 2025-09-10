@@ -1,19 +1,24 @@
 // src/components/sidebarOptions/MobileSearchPopup.js
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { useRouter } from "next/navigation";
 import { supabase } from "@/libs/supabseClient";
 
 const Container = styled.div`
-  position: relative;
+  position: fixed;
+  top: 55px;
+  right: 10px;
+  width: 300px;
+  max-height: 400px;
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#0b0b0b"};
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  max-height: calc(100vh - 55px - 60px);
-  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow-y: auto;
   padding: 8px 12px;
+  z-index: 1000;
 `;
 
 const ResultItem = styled.button`
@@ -52,10 +57,38 @@ const Sub = styled.div`
   color: rgba(255, 255, 255, 0.6);
 `;
 
-export default function MobileSearchPopup({ query, onClose }) {
+export default function MobileSearchPopup({
+  query,
+  onClose,
+  activeMenu,
+  setActiveMenu,
+}) {
+  const searchRef = useRef(null);
   const router = useRouter();
+
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target) &&
+        activeMenu === "mobilesearch"
+      ) {
+        setActiveMenu(null);
+      }
+    }
+
+    if (activeMenu === "mobilesearch") {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeMenu, setActiveMenu]);
 
   // Debounced lookup
   useEffect(() => {
@@ -103,12 +136,13 @@ export default function MobileSearchPopup({ query, onClose }) {
 
   const handleSelect = (username) => {
     onClose && onClose();
+    setActiveMenu(null);
     // navigate to user profile
     router.push(`/profile/${encodeURIComponent(username)}`);
   };
 
   return (
-    <Container role="list">
+    <Container role="list" ref={searchRef}>
       {loading && <Sub>Searching…</Sub>}
 
       {!loading && results.length === 0 && query && <Sub>No users found</Sub>}

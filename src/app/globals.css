@@ -24,6 +24,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h3 {
+  font-family: cursive;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

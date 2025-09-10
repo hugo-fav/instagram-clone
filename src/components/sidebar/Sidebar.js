@@ -34,6 +34,7 @@ export default function Sidebar() {
         setIsMobile(true);
         setIsTablet(false);
         setOpenOptionLeft("70px");
+        setActiveComponent(null);
       } else if (w <= 1248) {
         setIsMobile(false);
         setIsTablet(true);

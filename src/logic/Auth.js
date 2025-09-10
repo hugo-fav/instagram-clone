@@ -2,37 +2,45 @@
 
 import { useState } from "react";
 import { supabase } from "@/libs/supabseClient";
-
 import styled from "styled-components";
+import { useRouter } from "next/navigation";
 
 // ---------- styled components ----------
+const Page = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #000;
+`;
+
 const AuthWrapper = styled.div`
+  width: 100%;
   max-width: 350px;
-  margin: 3rem auto;
   padding: 2rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.9rem;
   background: #000;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
 `;
 
 const Logo = styled.h1`
-  font-family: "Billabong", cursive; /* IG-like font if available */
-  font-size: 2.5rem;
+  font-family: cursive;
+  font-size: 3rem;
   text-align: center;
   color: #fff;
   margin-bottom: 1.5rem;
 `;
 
 const Input = styled.input`
-  padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 4px;
   background: #121212;
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -40,7 +48,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 `;
 
@@ -50,7 +58,7 @@ const Button = styled.button`
   border: ${(props) =>
     props.$secondary ? "1px solid #0095f6" : "1px solid transparent"};
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
@@ -63,7 +71,7 @@ const Button = styled.button`
 
   &:hover:not(:disabled) {
     background: ${(props) =>
-      props.$secondary ? "rgba(0,149,246,0.1)" : "#007acc"};
+      props.$secondary ? "rgba(0,149,246,0.15)" : "#007acc"};
   }
 `;
 
@@ -90,23 +98,32 @@ const Divider = styled.div`
   }
 `;
 
+const SmallLink = styled.div`
+  text-align: center;
+  font-size: 12px;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+
+  span {
+    color: #0095f6;
+    cursor: pointer;
+    font-weight: 600;
+  }
+`;
+
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  // Signup: only create auth user
+  // Signup
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (authError) throw authError;
-
-      alert("Signup successful! Please confirm your email before logging in.");
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) throw error;
+      alert("Signup successful! Please confirm your email.");
     } catch (error) {
       alert(error.message);
     } finally {
@@ -114,42 +131,18 @@ export default function AuthForm() {
     }
   };
 
-  // Login: create profile if it doesn't exist
+  // Login
   const handleLogin = async () => {
     setLoading(true);
     try {
-      const { data: loginData, error: loginError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-      if (loginError) throw loginError;
-      const user = loginData.user;
-      if (!user) throw new Error("No user returned from Supabase Auth");
-
-      // Check if profile exists
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile) {
-        // Create profile row now
-        const { error: insertError } = await supabase.from("profiles").insert([
-          {
-            id: user.id,
-            username: "",
-            full_name: "",
-            bio: "",
-            avatar_url: "",
-          },
-        ]);
-        if (insertError) throw insertError;
-      }
-
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
       alert("Login successful!");
+
+      router.push("/");
     } catch (error) {
       alert(error.message);
     } finally {
@@ -158,32 +151,38 @@ export default function AuthForm() {
   };
 
   return (
-    <AuthWrapper>
-      <Logo>Instagram</Logo>
+    <Page>
+      <AuthWrapper>
+        <Logo>Instagram</Logo>
 
-      <Input
-        type="email"
-        placeholder="Phone number, username, or email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <Input
+          type="email"
+          placeholder="Phone number, username, or email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <Input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <Button onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging In..." : "Log In"}
-      </Button>
+        <Button onClick={handleLogin} disabled={loading}>
+          {loading ? "Logging In..." : "Log In"}
+        </Button>
 
-      <Divider>OR</Divider>
+        <Divider>OR</Divider>
 
-      <Button $secondary onClick={handleSignUp} disabled={loading}>
-        {loading ? "Signing Up..." : "Sign Up"}
-      </Button>
-    </AuthWrapper>
+        <Button $secondary onClick={handleSignUp} disabled={loading}>
+          {loading ? "Signing Up..." : "Sign Up"}
+        </Button>
+
+        <SmallLink>
+          Don’t have an account? <span onClick={handleSignUp}>Sign up</span>
+        </SmallLink>
+      </AuthWrapper>
+    </Page>
   );
 }

@@ -81,7 +81,7 @@ const TopNavbar = styled.div`
     gap: 10px;
     padding: 0 12px;
     background: #000;
-    border-bottom: 1px solid #292929ff;
+    /* border-bottom: 1px solid #292929ff; */
     z-index: 1000;
   }
 `;
@@ -92,13 +92,20 @@ const TopBrand = styled.div`
   gap: 8px;
 `;
 
+const TopLeft = styled.div`
+  display: flex;
+  text-align: end;
+  gap: 8px;
+  margin-left: auto;
+`;
+
 const TopSearchWrap = styled.div`
-  flex: 1;
+  /* flex: 1; */
   display: flex;
   align-items: center;
   gap: 8px;
   background: #121212;
-  border: 1px solid #2a2a2a;
+  /* border: 1px solid #2a2a2a; */
   border-radius: 10px;
   padding: 8px 10px;
   input {
@@ -291,49 +298,51 @@ function SidebarNav({
     <>
       <TopNavbar>
         <TopBrand>
-          <InstagramIcon size={24} />
+          <h3 className="logo-name">Instagram</h3>
         </TopBrand>
 
-        <TopSearchWrap>
-          {/* This is the single shared input: on mobile it opens the MobileSearchPopup
+        <TopLeft>
+          <TopSearchWrap>
+            {/* This is the single shared input: on mobile it opens the MobileSearchPopup
               and typing here updates `query` which MobileSearchPopup listens to. */}
-          <input
-            placeholder="Search"
-            value={query || ""}
-            onChange={(e) => setQuery?.(e.target.value)}
-            onFocus={() => {
-              if (isRealMobile) {
-                // open the mobile search popup
-                togglePopupOnly && togglePopupOnly("mobilesearch");
-                setActiveMenu && setActiveMenu("mobilesearch");
-              } else {
-                // open the desktop left search slide
-                toggleComponent && toggleComponent("search");
-              }
-            }}
-            readOnly={false}
-            autoComplete="off"
-            inputMode="search"
-          />
-        </TopSearchWrap>
+            <input
+              placeholder="Search"
+              value={query || ""}
+              onChange={(e) => setQuery?.(e.target.value)}
+              onFocus={() => {
+                if (isRealMobile) {
+                  // open the mobile search popup
+                  togglePopupOnly && togglePopupOnly("mobilesearch");
+                  setActiveMenu && setActiveMenu("mobilesearch");
+                } else {
+                  // open the desktop left search slide
+                  toggleComponent && toggleComponent("search");
+                }
+              }}
+              readOnly={false}
+              autoComplete="off"
+              inputMode="search"
+            />
+          </TopSearchWrap>
 
-        <TopRight>
-          <button
-            type="button"
-            onClick={() => {
-              handlePanelClick("notifications");
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              padding: 6,
-              cursor: "pointer",
-            }}
-            aria-label="Notifications"
-          >
-            <Bell size={22} />
-          </button>
-        </TopRight>
+          <TopRight>
+            <button
+              type="button"
+              onClick={() => {
+                handlePanelClick("notifications");
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 6,
+                cursor: "pointer",
+              }}
+              aria-label="Notifications"
+            >
+              <Bell size={22} />
+            </button>
+          </TopRight>
+        </TopLeft>
       </TopNavbar>
 
       <SideNavbar $isMobileMode={isMobileMode}>
