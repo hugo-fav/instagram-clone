@@ -1,4 +1,17 @@
-function page() {
+// import { cookies } from "next/headers";
+// import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+// import { redirect } from "next/navigation";
+
+export default async function page() {
+  // const supabase = createServerComponentClient({ cookies });
+
+  // const {
+  //   data: { session },
+  // } = await supabase.auth.getSession();
+  // if (!session) {
+  //   redirect("/auth");
+  // }
+
   return (
     <div
       style={{
@@ -13,5 +26,3 @@ function page() {
     </div>
   );
 }
-
-export default page;

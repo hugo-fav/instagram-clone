@@ -3,6 +3,93 @@
 import { useState } from "react";
 import { supabase } from "@/libs/supabseClient";
 
+import styled from "styled-components";
+
+// ---------- styled components ----------
+const AuthWrapper = styled.div`
+  max-width: 350px;
+  margin: 3rem auto;
+  padding: 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+`;
+
+const Logo = styled.h1`
+  font-family: "Billabong", cursive; /* IG-like font if available */
+  font-size: 2.5rem;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 1.5rem;
+`;
+
+const Input = styled.input`
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: #121212;
+  color: #fff;
+  font-size: 14px;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+`;
+
+const Button = styled.button`
+  background: ${(props) => (props.$secondary ? "transparent" : "#0095f6")};
+  color: ${(props) => (props.$secondary ? "#0095f6" : "#fff")};
+  border: ${(props) =>
+    props.$secondary ? "1px solid #0095f6" : "1px solid transparent"};
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    background: ${(props) =>
+      props.$secondary ? "rgba(0,149,246,0.1)" : "#007acc"};
+  }
+`;
+
+const Divider = styled.div`
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  margin: 1rem 0;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  &:not(:empty)::before {
+    margin-right: 0.75em;
+  }
+
+  &:not(:empty)::after {
+    margin-left: 0.75em;
+  }
+`;
+
 export default function AuthForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,17 +137,15 @@ export default function AuthForm() {
 
       if (!profile) {
         // Create profile row now
-        const { error: insertError } = await supabase
-          .from("profiles")
-          .insert([
-            {
-              id: user.id,
-              username: "",
-              full_name: "",
-              bio: "",
-              avatar_url: "",
-            },
-          ]);
+        const { error: insertError } = await supabase.from("profiles").insert([
+          {
+            id: user.id,
+            username: "",
+            full_name: "",
+            bio: "",
+            avatar_url: "",
+          },
+        ]);
         if (insertError) throw insertError;
       }
 
@@ -73,33 +158,32 @@ export default function AuthForm() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: "2rem auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1rem",
-      }}
-    >
-      <input
+    <AuthWrapper>
+      <Logo>Instagram</Logo>
+
+      <Input
         type="email"
-        placeholder="Email"
+        placeholder="Phone number, username, or email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+
+      <Input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleSignUp} disabled={loading}>
+
+      <Button onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging In..." : "Log In"}
+      </Button>
+
+      <Divider>OR</Divider>
+
+      <Button $secondary onClick={handleSignUp} disabled={loading}>
         {loading ? "Signing Up..." : "Sign Up"}
-      </button>
-      <button onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging In..." : "Login"}
-      </button>
-    </div>
+      </Button>
+    </AuthWrapper>
   );
 }

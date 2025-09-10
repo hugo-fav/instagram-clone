@@ -29,7 +29,6 @@ const spin = keyframes`
 const SideNavbar = styled.div`
   display: flex;
   flex-direction: column;
-  background: ;
   border-right: 1px solid #292929ff;
   border-radius: 0 24px 24px 0;
   height: 100vh;
@@ -38,6 +37,10 @@ const SideNavbar = styled.div`
   overflow-y: auto;
   animation: ${slideIn} 0.4s ease-out forwards;
   /* margin: 0; */
+
+  @media (max-width: 729px) {
+    display: none;
+  }
 `;
 
 const Title = styled.h1`

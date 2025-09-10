@@ -1,3 +1,7 @@
+"use client";
+
+import { supabase } from "@/libs/supabseClient";
+import { useEffect, useState } from "react";
 import styled, { css, keyframes } from "styled-components";
 
 const slideIn = keyframes`
@@ -68,10 +72,43 @@ const SearchInput = styled.input`
   }
 `;
 
-function InboxPopSlide() {
+export default function InboxPopSlide() {
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (error) {
+        console.error("Error fetching user:", error);
+        return;
+      }
+
+      if (user) {
+        // Fetch profile info using user.id
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", user.id) // 👈 assumes your profiles table uses id = auth.user.id
+          .single();
+
+        if (profileError) {
+          console.error("Error fetching profile:", profileError);
+        } else {
+          setUsername(profile.username);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <SideNavbar isVisible={true}>
-      <Title>user_name</Title>
+      <Title>{username ? username : "Loading..."}</Title>
 
       <SearchInput id="search-input" placeholder="Search" />
 
@@ -85,5 +122,3 @@ function InboxPopSlide() {
     </SideNavbar>
   );
 }
-
-export default InboxPopSlide;

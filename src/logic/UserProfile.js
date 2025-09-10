@@ -6,11 +6,16 @@ import Modal from "@/components/Modal";
 import Auth from "@/logic/Auth";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "./EditProfile";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const ProfileContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
+
+  @media (max-width: 729px) {
+    margin: 2.2rem  0;
+  }
 `;
 
 const ProfileHeader = styled.div`
@@ -141,7 +146,7 @@ function ProfilePage() {
     fetchProfile();
   }, []);
 
-  if (!userData) return <p>Loading...</p>;
+  if (!userData) return <LoadingSpinner />;
 
   return (
     <ProfileContainer>

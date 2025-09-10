@@ -1,4 +1,6 @@
+// src/components/sidebar/SidebarNav.js
 "use client";
+
 import {
   BadgePlus,
   Boxes,
@@ -16,7 +18,9 @@ import {
 import Link from "next/link";
 import styled from "styled-components";
 
-/* Sidebar container styling (unchanged rules other than using $isMobileMode) */
+/* --- keep your original styled-components exactly as before --- */
+/* I reproduce them here to make the file self-contained. */
+
 const SideNavbar = styled.div`
   position: relative;
   display: flex;
@@ -63,7 +67,6 @@ const SideNavbar = styled.div`
   }
 `;
 
-/* Mobile top navbar (kept) */
 const TopNavbar = styled.div`
   display: none;
 
@@ -114,7 +117,6 @@ const TopRight = styled.div`
   gap: 10px;
 `;
 
-/* Logo and name styling */
 const NameTnIcon = styled.div`
   display: flex;
   align-items: center;
@@ -145,7 +147,6 @@ const NameTnIcon = styled.div`
   }
 `;
 
-/* Link-based sidebar item — uses $active and supports $hideOnBottom */
 const IconNdName = styled(Link)`
   background: none;
   border: none;
@@ -174,7 +175,6 @@ const IconNdName = styled(Link)`
     }
   }
 
-  /* hide on mobile bottom bar when requested */
   ${(props) =>
     props.$hideOnBottom &&
     `
@@ -184,7 +184,6 @@ const IconNdName = styled(Link)`
   `}
 `;
 
-/* Button-based sidebar item — uses $active and supports $hideOnBottom */
 const IconButtonNdName = styled.button.attrs({ type: "button" })`
   background: none;
   border: none;
@@ -213,7 +212,6 @@ const IconButtonNdName = styled.button.attrs({ type: "button" })`
     }
   }
 
-  /* hide on mobile bottom bar when requested */
   ${(props) =>
     props.$hideOnBottom &&
     `
@@ -262,28 +260,60 @@ const MoreOptionIconNdName = styled.button.attrs({ type: "button" })`
 
 /* Component */
 function SidebarNav({
-  isMobileMode,
+  isMobileMode, // styling (use collapsed to shrink to logo-only)
+  isRealMobile, // actual device mobile boolean for behaviour
   activeMenu,
   setActiveMenu,
   toggleComponent,
   togglePopupOnly,
+  activeComponent,
+  query,
+  setQuery,
 }) {
+  // left-panel active state driven by activeComponent (desktop)
+  const isLeftActive = (name) => activeComponent === name;
+  // global popups are driven by activeMenu
+  const isGlobalActive = (name) => activeMenu === name;
+
+  const handlePanelClick = (component) => {
+    if (isRealMobile) {
+      // open mobile popup (do NOT duplicate input; the top input is used)
+      togglePopupOnly && togglePopupOnly(component);
+      setActiveMenu &&
+        setActiveMenu((prev) => (prev === component ? null : component));
+    } else {
+      // desktop/tablet: toggle left panel
+      toggleComponent && toggleComponent(component);
+    }
+  };
+
   return (
     <>
-      {/* mobile top navbar (Instagram + search input + notifications bell) */}
       <TopNavbar>
         <TopBrand>
           <InstagramIcon size={24} />
         </TopBrand>
 
         <TopSearchWrap>
+          {/* This is the single shared input: on mobile it opens the MobileSearchPopup
+              and typing here updates `query` which MobileSearchPopup listens to. */}
           <input
             placeholder="Search"
+            value={query || ""}
+            onChange={(e) => setQuery?.(e.target.value)}
             onFocus={() => {
-              setActiveMenu("search");
-              toggleComponent("search");
+              if (isRealMobile) {
+                // open the mobile search popup
+                togglePopupOnly && togglePopupOnly("mobilesearch");
+                setActiveMenu && setActiveMenu("mobilesearch");
+              } else {
+                // open the desktop left search slide
+                toggleComponent && toggleComponent("search");
+              }
             }}
-            readOnly
+            readOnly={false}
+            autoComplete="off"
+            inputMode="search"
           />
         </TopSearchWrap>
 
@@ -291,8 +321,7 @@ function SidebarNav({
           <button
             type="button"
             onClick={() => {
-              setActiveMenu("notifications");
-              toggleComponent("notifications");
+              handlePanelClick("notifications");
             }}
             style={{
               background: "none",
@@ -307,7 +336,6 @@ function SidebarNav({
         </TopRight>
       </TopNavbar>
 
-      {/* original sidebar / bottom bar (desktop + tablet + mobile bottom) */}
       <SideNavbar $isMobileMode={isMobileMode}>
         <NameTnIcon $isMobileMode={isMobileMode}>
           <p className="logo-icon">
@@ -318,32 +346,27 @@ function SidebarNav({
 
         <IconNdName
           href="/"
-          $active={activeMenu === "home"}
-          onClick={() => setActiveMenu("home")}
+          $active={isLeftActive("home") || isGlobalActive("home")}
+          onClick={() => setActiveMenu && setActiveMenu("home")}
         >
           <Home size={27} />
           <span>Home</span>
         </IconNdName>
 
-        {/* Search: present in desktop and tablet and top navbar, but hidden from mobile bottom bar */}
         <IconButtonNdName
-          $active={activeMenu === "search"}
-          $hideOnBottom={true} /* <-- hide on mobile bottom bar */
-          onClick={() => {
-            setActiveMenu("search");
-            toggleComponent("search");
-          }}
+          $active={isLeftActive("search")}
+          $hideOnBottom={true}
+          onClick={() => handlePanelClick("search")}
         >
           <Search size={27} />
           <span>Search</span>
         </IconButtonNdName>
 
-        {/* Explore: present everywhere EXCEPT mobile bottom bar */}
         <IconNdName
           href="/explore"
-          $active={activeMenu === "explore"}
-          $hideOnBottom={true} /* <-- hide on mobile bottom bar */
-          onClick={() => setActiveMenu("explore")}
+          $active={isLeftActive("explore") || isGlobalActive("explore")}
+          $hideOnBottom={true}
+          onClick={() => setActiveMenu && setActiveMenu("explore")}
         >
           <BadgePlus size={27} />
           <span>Explore</span>
@@ -351,40 +374,33 @@ function SidebarNav({
 
         <IconNdName
           href="/reels"
-          $active={activeMenu === "reels"}
-          onClick={() => setActiveMenu("reels")}
+          $active={isLeftActive("reels") || isGlobalActive("reels")}
+          onClick={() => setActiveMenu && setActiveMenu("reels")}
         >
           <Film size={27} />
           <span>Reels</span>
         </IconNdName>
 
         <IconButtonNdName
-          $active={activeMenu === "inbox"}
-          onClick={() => {
-            setActiveMenu("inbox");
-            toggleComponent("inbox");
-          }}
+          $active={isLeftActive("inbox")}
+          onClick={() => handlePanelClick("inbox")}
         >
           <MessageCircle size={27} />
           <span>Messages</span>
         </IconButtonNdName>
 
         <IconButtonNdName
-          $active={activeMenu === "notifications"}
-          onClick={() => {
-            setActiveMenu("notifications");
-            toggleComponent("notifications");
-          }}
+          $active={isLeftActive("notifications")}
+          onClick={() => handlePanelClick("notifications")}
         >
           <Heart size={27} />
           <span>Notifications</span>
         </IconButtonNdName>
 
         <IconButtonNdName
-          $active={activeMenu === "create"}
+          $active={isGlobalActive("create")}
           onClick={() => {
-            setActiveMenu("create");
-            togglePopupOnly("create");
+            togglePopupOnly && togglePopupOnly("create");
           }}
         >
           <SquarePlus size={27} />
@@ -393,8 +409,8 @@ function SidebarNav({
 
         <IconNdName
           href="/profile"
-          $active={activeMenu === "profile"}
-          onClick={() => setActiveMenu("profile")}
+          $active={isLeftActive("profile") || isGlobalActive("profile")}
+          onClick={() => setActiveMenu && setActiveMenu("profile")}
         >
           <User size={27} />
           <span>Profile</span>
@@ -403,8 +419,7 @@ function SidebarNav({
         <TheMoreOption>
           <MoreOptionIconNdName
             onClick={() => {
-              setActiveMenu("more");
-              togglePopupOnly("more");
+              togglePopupOnly && togglePopupOnly("more");
             }}
           >
             <Menu size={27} />
@@ -413,8 +428,7 @@ function SidebarNav({
 
           <MoreOptionIconNdName
             onClick={() => {
-              setActiveMenu("meta");
-              togglePopupOnly("meta");
+              togglePopupOnly && togglePopupOnly("meta");
             }}
           >
             <Boxes size={27} />

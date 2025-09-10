@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import styled from "styled-components";
 import MorePopupSlide from "./MorePopupSlide";
 import SearchPopupSlide from "./SearchPopupSlide";
@@ -8,7 +9,7 @@ import InboxPopSlide from "./InboxPopSlide";
 import NotificationPopSlide from "./NotificationPopslide";
 import CreatePopup from "./CreatePopup";
 
-/* Left slide panel (desktop / original behavior) — only changed $show transient */
+/* Left slide panel (desktop / original behavior) */
 const PopSlide = styled.div`
   position: fixed;
   top: 0;
@@ -16,34 +17,31 @@ const PopSlide = styled.div`
   width: 300px;
   height: 100vh;
   box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
-  transition: left 0.3s ease;
+  transition: left 0.28s ease;
   padding: 20px;
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#0b0b0b"};
-  z-index: 1005;
+  z-index: 1100; /* slides below overlays */
 `;
 
-/* Floating wrappers for create/more/meta — made fixed + high z so they are clickable above overlay */
 const OpenOption = styled.div`
-  position: fixed; /* changed from absolute -> fixed so it sits above overlay */
+  position: fixed;
   left: ${(props) => (props.$mobilemode ? "5.5rem" : "22px")};
-  z-index: 1007; /* above overlay (1004) and popslides (1005/1006) */
+  z-index: 2200; /* overlays above slides */
 `;
 
-/* Mobile top-anchored popup container (UNDER the mobile top navbar) */
 const TopPopup = styled.div`
   position: fixed;
-  top: 55px; /* TopNavbar height */
+  top: 55px;
   left: 0;
   right: 0;
-  max-height: calc(100vh - 55px - 60px); /* leave space for bottom bar */
+  max-height: calc(100vh - 55px - 60px);
   overflow: auto;
   padding: 12px;
   background: ${({ theme }) => theme.colors?.backgroundSecondary || "#0b0b0b"};
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  z-index: 1006;
+  z-index: 2100; /* above slides */
 `;
 
-/* Simple overlay to close on click — use transient props for top/bottom so they aren't forwarded to DOM */
 const Overlay = styled.div`
   position: fixed;
   top: ${(p) => p.$top || 0};
@@ -51,7 +49,7 @@ const Overlay = styled.div`
   right: 0;
   bottom: ${(p) => p.$bottom || 0};
   background: rgba(0, 0, 0, 0.35);
-  z-index: 1004;
+  z-index: 2000; /* sits above slides, under openoptions */
 `;
 
 const Create = styled(OpenOption)`
@@ -66,39 +64,58 @@ const Meta = styled(OpenOption)`
 `;
 
 function BarOptions({
+  activeMenu,
   activeComponent,
   openOptionLeft,
   closeComponent,
+  closePopup,
   isMobileMode,
+  isTabletMode,
+  isDesktopMode,
+  query,
+  onUserSelect,
+  setSidebarCompact,
 }) {
-  // Mobile: show Search/Notifications as TOP-anchored popups
+  // LEFT-PANELS use activeComponent explicitly
+  // GLOBAL POPUPS use activeMenu explicitly
+
+  // Only request collapse when a left-panel is open AND we're on desktop
+  useEffect(() => {
+    if (!setSidebarCompact) return;
+    const shouldCollapse =
+      isDesktopMode &&
+      ["search", "inbox", "notifications"].includes(activeComponent);
+    setSidebarCompact(shouldCollapse);
+  }, [activeComponent, isDesktopMode, setSidebarCompact]);
+
+  // Mobile: top anchored popups for search / notifications (when using activeMenu)
   if (
     isMobileMode &&
-    (activeComponent === "search" || activeComponent === "notifications")
+    (activeMenu === "search" || activeMenu === "notifications")
   ) {
     return (
       <>
-        <Overlay
-          $top="55px"
-          $bottom="60px"
-          onClick={() => closeComponent(activeComponent)}
-        />
+        <Overlay $top="55px" $bottom="60px" onClick={() => closePopup?.()} />
         <TopPopup>
-          {activeComponent === "search" && <SearchPopupSlide />}
-          {activeComponent === "notifications" && <NotificationPopSlide />}
+          {activeMenu === "search" && (
+            <SearchPopupSlide query={query} onUserSelect={onUserSelect} />
+          )}
+          {activeMenu === "notifications" && <NotificationPopSlide />}
         </TopPopup>
       </>
     );
   }
 
-  // Desktop (and other popups on mobile) — keep original layout
-  const showOverlay = ["create", "more", "meta"].includes(activeComponent);
+  // Desktop: render left slides based on activeComponent (unaffected by overlays)
+  const showOverlay = ["create", "more", "meta"].includes(activeMenu);
 
   return (
     <>
-      {/* Left slide panels (search/inbox/notifications) */}
+      {/* Desktop left slide panels (driven by activeComponent explicitly) */}
       <PopSlide $show={activeComponent === "search"}>
-        {activeComponent === "search" && <SearchPopupSlide />}
+        {activeComponent === "search" && (
+          <SearchPopupSlide query={query} onUserSelect={onUserSelect} />
+        )}
       </PopSlide>
 
       <PopSlide $show={activeComponent === "inbox"}>
@@ -109,25 +126,21 @@ function BarOptions({
         {activeComponent === "notifications" && <NotificationPopSlide />}
       </PopSlide>
 
-      {/* Overlay and floating options for create/more/meta */}
+      {/* Overlay (global popups) and floating open options */}
       {showOverlay && (
-        <Overlay
-          $top="0"
-          $bottom="0"
-          onClick={() => closeComponent(activeComponent)}
-        />
+        <Overlay $top="0" $bottom="0" onClick={() => closePopup?.()} />
       )}
 
       <Create style={{ left: openOptionLeft }}>
-        {activeComponent === "create" && <CreatePopup />}
+        {activeMenu === "create" && <CreatePopup />}
       </Create>
 
       <More style={{ left: openOptionLeft }}>
-        {activeComponent === "more" && <MorePopupSlide />}
+        {activeMenu === "more" && <MorePopupSlide />}
       </More>
 
       <Meta style={{ left: openOptionLeft }}>
-        {activeComponent === "meta" && <AlsoFromMetaPopup />}
+        {activeMenu === "meta" && <AlsoFromMetaPopup />}
       </Meta>
     </>
   );

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { supabase } from "@/libs/supabseClient";
+import LoadingSpinner from "@/components/LoadingSpinner"; // Add this import
 
 export default function EditProfile() {
   const [profile, setProfile] = useState({});
@@ -108,7 +109,7 @@ export default function EditProfile() {
     }
   }
 
-  if (loading) return <Message>Loading profile...</Message>;
+  if (loading) return <LoadingSpinner />;
 
   return (
     <Container>
@@ -174,7 +175,7 @@ export default function EditProfile() {
 }
 
 /* ----------------- STYLED COMPONENTS ----------------- */
-const Container = styled.div` 
+const Container = styled.div`
   max-width: 450px;
   margin: 2rem auto;
   padding: 2rem;

@@ -6,6 +6,7 @@ import styled from "styled-components";
 import Modal from "@/components/Modal";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "@/logic/EditProfile";
+import LoadingSpinner from "@/components/LoadingSpinner"; // Add this import
 
 /* ---------- styled components (kept your style) ---------- */
 const ProfileContainer = styled.div`
@@ -13,6 +14,10 @@ const ProfileContainer = styled.div`
   margin: 0 auto;
   padding: 2rem;
   color: #fff;
+
+  @media (max-width: 729px) {
+    margin: 2rem 0rem;
+  }
 `;
 const Avatar = styled.img`
   width: 150px;
@@ -21,30 +26,74 @@ const Avatar = styled.img`
   object-fit: cover;
   background: #2a2a2a;
 `;
-const UserInfo = styled.div` display: flex; flex-direction: column; `;
-const UsernameRow = styled.div` display: flex; align-items: center; gap: 1rem; `;
-const Username = styled.h2` font-size: 1.8rem; font-weight: 600; margin: 0; `;
+const UserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+const UsernameRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+const Username = styled.h2`
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+`;
 const EditButton = styled.button`
-  padding: 6px 14px; font-size: 0.95rem; border-radius: 6px; border: 1px solid #ccc;
-  cursor: pointer; background: white; color: #111;
-  &:hover { background: #f2f2f2; }
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  background: white;
+  color: #111;
+  &:hover {
+    background: #f2f2f2;
+  }
 `;
 const FollowButton = styled.button`
-  padding: 6px 14px; font-size: 0.95rem; border-radius: 6px; border: 1px solid #4a90e2;
-  cursor: pointer; background: #4a90e2; color: white;
+  padding: 6px 14px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  border: 1px solid #4a90e2;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
 `;
-const StatsRow = styled.div` display:flex; gap:2rem; margin-top:1rem; span{ font-weight:500 } `;
-const DisplayName = styled.div` margin-top:1rem; font-weight:500; `;
+const StatsRow = styled.div`
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  span {
+    font-weight: 500;
+  }
+`;
+const DisplayName = styled.div`
+  margin-top: 1rem;
+  font-weight: 500;
+`;
 const PostsGrid = styled.div`
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem; margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
 `;
 const PostItem = styled.img`
-  width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px;
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 8px;
 `;
 const DebugBox = styled.pre`
-  background: rgba(255,255,255,0.04); border-radius: 6px; padding: 12px; color: #fff;
-  font-size: 12px; overflow: auto; max-height: 180px; margin-top: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  padding: 12px;
+  color: #fff;
+  font-size: 12px;
+  overflow: auto;
+  max-height: 180px;
+  margin-top: 12px;
 `;
 
 /* ---------- component ---------- */
@@ -109,7 +158,10 @@ export default function ProfileClient({ username }) {
             .limit(1)
             .maybeSingle();
 
-          logDebug("profileQuery (eq lowercased)", { data: eqData, error: eqError });
+          logDebug("profileQuery (eq lowercased)", {
+            data: eqData,
+            error: eqError,
+          });
           profilesData = eqData || profilesData;
         }
 
@@ -260,7 +312,7 @@ export default function ProfileClient({ username }) {
   if (loading) {
     return (
       <ProfileContainer>
-        <p>Loading profile…</p>
+        <LoadingSpinner />
       </ProfileContainer>
     );
   }
@@ -303,7 +355,10 @@ export default function ProfileClient({ username }) {
                 Edit Profile
               </EditButton>
             ) : (
-              <FollowButton onClick={handleToggleFollow} disabled={followLoading}>
+              <FollowButton
+                onClick={handleToggleFollow}
+                disabled={followLoading}
+              >
                 {followLoading ? "..." : isFollowing ? "Unfollow" : "Follow"}
               </FollowButton>
             )}
