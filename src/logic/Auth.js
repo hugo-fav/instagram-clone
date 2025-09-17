@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/libs/supabseClient";
+// import { supabase } from "@/libs/supabaseClient";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/libs/supabseClient";
 
 // ---------- styled components ----------
 const Page = styled.div`
@@ -11,7 +12,7 @@ const Page = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: #000;
+  /* background: #000; */
 `;
 
 const AuthWrapper = styled.div`
@@ -21,7 +22,7 @@ const AuthWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  background: #000;
+  /* background: #000; */
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 6px;
 `;
@@ -121,7 +122,10 @@ export default function AuthForm() {
   const handleSignUp = async () => {
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({ email, password });
+      const { error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
       if (error) throw error;
       alert("Signup successful! Please confirm your email.");
     } catch (error) {

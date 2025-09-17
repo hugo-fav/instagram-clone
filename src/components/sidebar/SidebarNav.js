@@ -57,7 +57,7 @@ const SideNavbar = styled.div`
     padding: 0 10px;
     border-right: none;
     border-top: 1px solid #292929ff;
-    background: #000;
+    /* background: #000; */
 
     span,
     p,
@@ -80,7 +80,7 @@ const TopNavbar = styled.div`
     align-items: center;
     gap: 10px;
     padding: 0 12px;
-    background: #000;
+    /* background: #000; */
     /* border-bottom: 1px solid #292929ff; */
     z-index: 1000;
   }
