@@ -1,4 +1,121 @@
 "use client";
+/* ----------------- STYLED COMPONENTS ----------------- */
+const Container = styled.div`
+/* position: relative; */
+  margin: auto;
+  padding: 1px;
+  border-radius: 16px;
+`;
+
+const Title = styled.h2`
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`;
+
+const AvatarWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+`;
+
+const Avatar = styled.img`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+  /* border: 2px solid #ddd; */
+`;
+
+const AvatarPlaceholder = styled.div`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #f3f3f3;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #777;
+`;
+
+const Label = styled.label`
+  cursor: pointer;
+  color: #2563eb;
+  font-size: 0.9rem;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const LabelText = styled.label`
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+`;
+
+const Input = styled.input`
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+  }
+`;
+
+const Textarea = styled.textarea`
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: none;
+  min-height: 80px;
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+  }
+`;
+
+const Button = styled.button`
+  padding: 0.8rem;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover {
+    background: #1d4ed8;
+  }
+`;
+
+const Message = styled.p`
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1rem;
+  color: #555;
+`;
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
@@ -173,122 +290,3 @@ export default function EditProfile() {
     </Container>
   );
 }
-
-/* ----------------- STYLED COMPONENTS ----------------- */
-const Container = styled.div`
-  max-width: 450px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-`;
-
-const Title = styled.h2`
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  text-align: center;
-`;
-
-const AvatarWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1.5rem;
-`;
-
-const Avatar = styled.img`
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-  border: 2px solid #ddd;
-`;
-
-const AvatarPlaceholder = styled.div`
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: #f3f3f3;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #777;
-`;
-
-const Label = styled.label`
-  cursor: pointer;
-  color: #2563eb;
-  font-size: 0.9rem;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const HiddenInput = styled.input`
-  display: none;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const LabelText = styled.label`
-  font-size: 0.85rem;
-  margin-bottom: 0.3rem;
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  &:focus {
-    outline: none;
-    border-color: #2563eb;
-  }
-`;
-
-const Textarea = styled.textarea`
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  resize: none;
-  min-height: 80px;
-  &:focus {
-    outline: none;
-    border-color: #2563eb;
-  }
-`;
-
-const Button = styled.button`
-  padding: 0.8rem;
-  background: #2563eb;
-  color: #fff;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  &:hover {
-    background: #1d4ed8;
-  }
-`;
-
-const Message = styled.p`
-  text-align: center;
-  margin-top: 2rem;
-  font-size: 1rem;
-  color: #555;
-`;

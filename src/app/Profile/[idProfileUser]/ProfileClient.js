@@ -1,4 +1,3 @@
-// app/profile/[username]/ProfileClient.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,19 +5,20 @@ import styled from "styled-components";
 import Modal from "@/components/Modal";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "@/logic/EditProfile";
-import LoadingSpinner from "@/components/LoadingSpinner"; // Add this import
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 /* ---------- styled components (kept your style) ---------- */
 const ProfileContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  color: #fff;
+  /* color: #fff; */
 
   @media (max-width: 729px) {
     margin: 2rem 0rem;
   }
 `;
+
 const Avatar = styled.img`
   width: 150px;
   height: 150px;
@@ -26,32 +26,38 @@ const Avatar = styled.img`
   object-fit: cover;
   background: #2a2a2a;
 `;
+
 const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const UsernameRow = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
 `;
+
 const Username = styled.h2`
   font-size: 1.8rem;
   font-weight: 600;
   margin: 0;
 `;
+
 const EditButton = styled.button`
   padding: 6px 14px;
   font-size: 0.95rem;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   cursor: pointer;
-  background: white;
+  /* background: white; */
   color: #111;
+
   &:hover {
-    background: #f2f2f2;
+    /* background: #f2f2f2; */
   }
 `;
+
 const FollowButton = styled.button`
   padding: 6px 14px;
   font-size: 0.95rem;
@@ -61,30 +67,37 @@ const FollowButton = styled.button`
   background: #4a90e2;
   color: white;
 `;
+
 const StatsRow = styled.div`
   display: flex;
   gap: 2rem;
   margin-top: 1rem;
+
   span {
     font-weight: 500;
   }
 `;
+
 const DisplayName = styled.div`
   margin-top: 1rem;
   font-weight: 500;
 `;
+
 const PostsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   margin-top: 2rem;
+  color: aliceblue;
 `;
+
 const PostItem = styled.img`
   width: 100%;
   aspect-ratio: 1/1;
   object-fit: cover;
   border-radius: 8px;
 `;
+
 const DebugBox = styled.pre`
   background: rgba(255, 255, 255, 0.04);
   border-radius: 6px;
@@ -117,7 +130,6 @@ export default function ProfileClient({ username }) {
 
   const logDebug = (label, obj) => {
     setDebugMsgs((s) => [...s, `${label}: ${JSON.stringify(obj, null, 2)}`]);
-    // also console.log for convenience
     console.log(label, obj);
   };
 
@@ -135,8 +147,7 @@ export default function ProfileClient({ username }) {
         logDebug("param.username", rawParam);
         logDebug("decoded username", uname);
 
-        // First attempt: case-insensitive search for username using ilike
-        // limit(1) + maybeSingle() keeps it safe for duplicates
+        // Case-insensitive search
         const { data: pData, error: pError } = await supabase
           .from("profiles")
           .select("id, username, full_name, avatar_url")
@@ -145,10 +156,9 @@ export default function ProfileClient({ username }) {
           .maybeSingle();
 
         logDebug("profileQuery (ilike)", { data: pData, error: pError });
-
         let profilesData = pData;
 
-        // Fallback 1: if not found, try exact eq (lowercased) — helpful if stored lowercased
+        // Fallback 1: lowercase exact match
         if (!profilesData) {
           const lc = uname.toLowerCase();
           const { data: eqData, error: eqError } = await supabase
@@ -157,7 +167,6 @@ export default function ProfileClient({ username }) {
             .eq("username", lc)
             .limit(1)
             .maybeSingle();
-
           logDebug("profileQuery (eq lowercased)", {
             data: eqData,
             error: eqError,
@@ -165,7 +174,7 @@ export default function ProfileClient({ username }) {
           profilesData = eqData || profilesData;
         }
 
-        // Fallback 2: if still not found and the param looks like a uuid, try lookup by id
+        // Fallback 2: lookup by id if UUID
         const uuidRegex =
           /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         if (!profilesData && uuidRegex.test(uname)) {
@@ -175,7 +184,6 @@ export default function ProfileClient({ username }) {
             .eq("id", uname)
             .limit(1)
             .maybeSingle();
-
           logDebug("profileQuery (by id)", { data: idData, error: idError });
           profilesData = idData || profilesData;
         }
@@ -187,7 +195,7 @@ export default function ProfileClient({ username }) {
           return;
         }
 
-        // fetch posts
+        // Fetch posts
         const { data: postsData, error: postsError } = await supabase
           .from("posts")
           .select("id, image_url, caption, created_at")
@@ -200,7 +208,7 @@ export default function ProfileClient({ username }) {
         }
         logDebug("postsData length", postsData?.length ?? 0);
 
-        // followers count
+        // Followers & following count
         const followersResp = await supabase
           .from("follows")
           .select("*", { count: "exact", head: true })
@@ -214,14 +222,14 @@ export default function ProfileClient({ username }) {
         const followersCount = followersResp?.count ?? 0;
         const followingCount = followingResp?.count ?? 0;
 
-        // current logged-in user
+        // Current logged-in user
         const { data: authData } = await supabase.auth.getUser();
         const user = authData?.user ?? null;
 
-        // owner?
+        // Owner?
         const owner = user?.id === profilesData.id;
 
-        // check if current user follows
+        // Check follow state
         let followingRowExists = false;
         if (user && !owner) {
           const { data: followRow, error: followRowError } = await supabase
@@ -259,6 +267,7 @@ export default function ProfileClient({ username }) {
     };
 
     fetchProfileAndPosts();
+
     return () => {
       mounted = false;
     };
@@ -287,7 +296,7 @@ export default function ProfileClient({ username }) {
         if (error) throw error;
       }
 
-      // re-count
+      // Re-count
       const followersResp = await supabase
         .from("follows")
         .select("*", { count: "exact", head: true })
@@ -384,7 +393,7 @@ export default function ProfileClient({ username }) {
             />
           ))
         ) : (
-          <p style={{ color: "#aaa" }}>No posts yet.</p>
+          <p>Share your first photo</p>
         )}
       </PostsGrid>
 

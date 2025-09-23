@@ -7,6 +7,8 @@ import Auth from "@/logic/Auth";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "./EditProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { Camera, CameraIcon, CameraOffIcon } from "lucide-react";
+import UploadPost from "@/components/UploadPost";
 
 const ProfileContainer = styled.div`
   max-width: 900px;
@@ -14,7 +16,7 @@ const ProfileContainer = styled.div`
   padding: 2rem;
 
   @media (max-width: 729px) {
-    margin: 2.2rem  0;
+    margin: 2.2rem 0;
   }
 `;
 
@@ -52,13 +54,9 @@ const EditButton = styled.button`
   padding: 6px 14px;
   font-size: 0.95rem;
   border-radius: 4px;
-  border: 1px solid #ccc;
+  border: none;
   cursor: pointer;
-  background: white;
-
-  &:hover {
-    background: #f2f2f2;
-  }
+  /* background: white; */
 `;
 
 const StatsRow = styled.div`
@@ -92,11 +90,35 @@ const PostItem = styled.img`
   border-radius: 8px;
 `;
 
-// ... (styled components from previous example: Avatar, UsernameRow, StatsRow, PostsGrid, etc.) ...
+const UploadingContainers = styled.div`
+  flex: 1; /* take up available space */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center; /* centers vertically */
+  min-height: 60vh; /* fallback so it's tall enough */
+`;
+
+const UploadingContainer = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+`;
+
+const UploadingContainerHead = styled.h2`
+  font-size: 1.8rem;
+  font-weight: 800;
+`;
 
 function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -130,6 +152,30 @@ function ProfilePage() {
         console.error(postsError);
       }
       console.log("Profile ID:", profile.id);
+
+      // get followers
+      const { count: followersCount, error: followersError } = await supabase
+        .from("follows")
+        .select("*", {
+          count: "exact",
+          head: true,
+        })
+        .eq("following_id", profile.id);
+
+      if (followersError) {
+        console.error("Followers error:", followersError);
+      }
+
+      // get following
+      const { count: followingCount, error: followingError } = await supabase
+        .from("follows")
+        .select("*", { count: "exact", head: true })
+        .eq("follower_id", profile.id);
+
+      if (followingError) {
+        console.error("Following error:", followingError);
+      }
+
       const { data: userData } = await supabase.auth.getUser();
       console.log("User ID:", userData.user.id);
 
@@ -138,8 +184,8 @@ function ProfilePage() {
         displayName: profile.full_name,
         avatarUrl: profile.avatar_url || "/default-avatar.png",
         posts: posts || [],
-        followers: profile.followers_count || 0,
-        following: profile.following_count || 0,
+        followers: followersCount ?? 0,
+        following: followingCount ?? 0,
       });
     };
 
@@ -177,6 +223,35 @@ function ProfilePage() {
       {showEditModal && (
         <Modal onClose={() => setShowEditModal(false)}>
           <EditProfile onClose={() => setShowEditModal(false)} />
+        </Modal>
+      )}
+
+      <hr style={{ marginTop: "2rem" }} />
+      {userData.posts.length === 0 ? (
+        <UploadingContainer>
+          <CameraIcon size={60} />
+          <UploadingContainerHead>Share Photos</UploadingContainerHead>
+          <p style={{ fontSize: "14px" }}>
+            When you share photos, they will appear on your profile
+          </p>
+          <p
+            style={{ fontSize: "14px", color: "skyblue" }}
+            onClick={() => setShowUploadModal(true)}
+          >
+            Share your first Photo
+          </p>
+        </UploadingContainer>
+      ) : (
+        <PostsGrid>
+          {userData.posts.map((post) => (
+            <PostItem key={post.id} src={post.image_url} alt="Post" />
+          ))}
+        </PostsGrid>
+      )}
+
+      {showEditModal && (
+        <Modal onClose={() => setShowUploadModal(false)}>
+          <UploadPost onClose={() => setShowUploadModal(false)} />
         </Modal>
       )}
     </ProfileContainer>
