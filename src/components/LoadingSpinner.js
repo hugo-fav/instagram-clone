@@ -2,16 +2,11 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 
-/* ---------- keyframes ---------- */
-const rotate = keyframes`
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-`;
-
-const pulse = keyframes`
-  0%   { transform: scale(1); opacity: 1; }
-  50%  { transform: scale(1.3); opacity: 0.6; }
-  100% { transform: scale(1); opacity: 1; }
+/* keyframes: one lash grows/brights up, others fade */
+const lashPulse = keyframes`
+  0%   { opacity: 0.2; transform: scaleY(0.6) translateY(var(--translate)); }
+  50%  { opacity: 1;   transform: scaleY(1.2) translateY(var(--translate)); }
+  100% { opacity: 0.2; transform: scaleY(0.6) translateY(var(--translate)); }
 `;
 
 /* ---------- layout ---------- */
@@ -19,54 +14,68 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh; /* full-screen center */
+  min-height: 100vh;
 `;
 
-/* spinner container */
 const SpinnerShell = styled.div`
   position: relative;
   width: ${(p) => p.size}px;
   height: ${(p) => p.size}px;
 `;
 
-/* rotating ring */
-const Ring = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: ${(p) => p.thickness}px solid ${(p) => p.color};
-  border-top-color: transparent;
-  animation: ${rotate} ${(p) => p.speed}s linear infinite;
-`;
+/* each lash around the circle */
+const Lash = styled.div`
+  --r: ${(p) => p.size / 2}px;
+  --translate: calc(-1 * var(--r) + ${(p) => p.lashLength / 2}px);
 
-/* pulsing center dot */
-const Dot = styled.div`
   position: absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: ${(p) => Math.max(6, Math.round(p.thickness * 1.2))}px;
-  height: ${(p) => Math.max(6, Math.round(p.thickness * 1.2))}px;
+  top: 50%;
+  width: ${(p) => p.lashWidth}px;
+  height: ${(p) => p.lashLength}px;
+  margin-left: calc(${(p) => p.lashWidth}px * -0.5);
   background: ${(p) => p.color};
-  border-radius: 50%;
-  animation: ${pulse} ${(p) => Math.max(0.7, p.speed * 0.75)}s ease-in-out
-    infinite;
+  border-radius: 999px;
+
+  transform-origin: 50% 100%;
+  transform: rotate(${(p) => p.angle}deg)
+    translateY(calc(-1 * var(--r) + ${(p) => p.lashLength / 2}px));
+
+  animation: ${lashPulse} ${(p) => p.speed}s linear infinite;
+  animation-delay: ${(p) => p.delay}s;
 `;
 
 /* ---------- component ---------- */
 export default function LoadingSpinner({
-  size = 70, // px
-  color = "#3498db", // default: blue
-  thickness = 6, // px
-  speed = 1.4, // seconds per rotation
+  size = 40,
+  color = "#fff",
+  lashWidth = 5,
+  lashLength = 16,
+  speed = 1.2, // full cycle
+  count = 12,
   label = "Loading...",
 }) {
+  const lashes = Array.from({ length: count }, (_, i) => {
+    const angle = (360 / count) * i;
+    const delay = (speed / count) * i; // stagger each lash
+    return { angle, delay };
+  });
+
   return (
     <Wrapper role="status" aria-label={label}>
       <SpinnerShell size={size}>
-        <Ring size={size} thickness={thickness} color={color} speed={speed} />
-        <Dot size={size} thickness={thickness} color={color} speed={speed} />
+        {lashes.map((lash, i) => (
+          <Lash
+            key={i}
+            size={size}
+            color={color}
+            lashWidth={lashWidth}
+            lashLength={lashLength}
+            speed={speed}
+            angle={lash.angle}
+            delay={lash.delay}
+          />
+        ))}
       </SpinnerShell>
     </Wrapper>
   );

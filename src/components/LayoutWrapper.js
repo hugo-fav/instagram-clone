@@ -4,7 +4,24 @@
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/sidebar/Sidebar";
 import AuthGuard from "./AuthProvider";
+import styled from "styled-components";
 // import AuthGuard from "@/components/AuthGuard";
+
+const MainContent = styled.div`
+  margin-left: 220px; /* default desktop sidebar width */
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+  flex: 1;
+  overflow: auto;
+
+  @media (max-width: 1248px) {
+    margin-left: 80px; /* compact sidebar */
+  }
+
+  @media (max-width: 729px) {
+    margin-left: 0; /* sidebar becomes bottom bar */
+  }
+`;
 
 export default function LayoutWrapper({ children }) {
   const pathname = usePathname();
@@ -39,7 +56,9 @@ export default function LayoutWrapper({ children }) {
         }}
       >
         <Sidebar />
-        <main style={{ flex: 1, overflow: "auto" }}>{children}</main>
+        <MainContent style={{ flex: 1, overflow: "auto" }}>
+          {children}
+        </MainContent>
       </div>
     </AuthGuard>
   );

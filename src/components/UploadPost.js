@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/libs/supabseClient";
+import Image from "next/image";
 
 export default function UploadPost({ userId, onClose, onUploaded }) {
   const [caption, setCaption] = useState("");
@@ -54,10 +55,12 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
         console.warn("No public URL returned. Check bucket privacy settings.");
       }
 
+      console.log("Public URL:", publicUrl);
+
       // insert into posts table
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
-        image_url: publicUrl,
+        media_url: publicUrl,
         caption,
       });
 
@@ -91,11 +94,7 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
 
       {previewUrl && (
         <div style={{ marginBottom: 8 }}>
-          <img
-            src={previewUrl}
-            alt="preview"
-            style={{ width: "100%", borderRadius: 8 }}
-          />
+          <Image src={previewUrl} alt="preview" width={50} height={50} />
         </div>
       )}
 

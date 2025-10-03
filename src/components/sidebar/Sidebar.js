@@ -107,6 +107,7 @@ export default function Sidebar() {
         setSidebarCompact={setCompactSidebar}
         query={query}
         onUserSelect={handleUserSelect}
+        setActiveMenu={setActiveMenu}
       />
 
       {/* Mobile full-screen search popup (under top navbar) */}
@@ -127,6 +128,8 @@ export default function Sidebar() {
             onClose={() => {
               setActiveMenu(null);
             }}
+            activeMenu={activeMenu}
+            setActiveMenu={setActiveMenu}
           />
         </div>
       )}

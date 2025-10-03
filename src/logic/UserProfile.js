@@ -7,8 +7,15 @@ import Auth from "@/logic/Auth";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "./EditProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { Camera, CameraIcon, CameraOffIcon } from "lucide-react";
+import {
+  Camera,
+  CameraIcon,
+  CameraOffIcon,
+  CircleArrowLeft,
+  PlusCircle,
+} from "lucide-react";
 import UploadPost from "@/components/UploadPost";
+import PostItem from "@/components/sidebarOptions/PostItem";
 
 const ProfileContainer = styled.div`
   max-width: 900px;
@@ -83,13 +90,6 @@ const PostsGrid = styled.div`
   margin-top: 2rem;
 `;
 
-const PostItem = styled.img`
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 8px;
-`;
-
 const UploadingContainers = styled.div`
   flex: 1; /* take up available space */
   display: flex;
@@ -127,7 +127,12 @@ function ProfilePage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) return;
+      if (!user) {
+        console.error("No user logged in.");
+        return;
+      }
+
+      // if (!user) return;
 
       // Fetch profile info
       const { data: profile, error: profileError } = await supabase
@@ -152,6 +157,7 @@ function ProfilePage() {
         console.error(postsError);
       }
       console.log("Profile ID:", profile.id);
+      console.log("Posts data:", posts);
 
       // get followers
       const { count: followersCount, error: followersError } = await supabase
@@ -180,6 +186,7 @@ function ProfilePage() {
       console.log("User ID:", userData.user.id);
 
       setUserData({
+        id: profile.id,
         username: profile.username,
         displayName: profile.full_name,
         avatarUrl: profile.avatar_url || "/default-avatar.png",
@@ -214,19 +221,21 @@ function ProfilePage() {
         </div>
       </div>
 
-      <PostsGrid>
-        {userData.posts.map((post) => (
-          <PostItem key={post.id} src={post.image_url} alt="Post" />
-        ))}
-      </PostsGrid>
-
       {showEditModal && (
         <Modal onClose={() => setShowEditModal(false)}>
           <EditProfile onClose={() => setShowEditModal(false)} />
         </Modal>
       )}
 
-      <hr style={{ marginTop: "2rem" }} />
+      <span
+        style={{ cursor: "pointer" }}
+        onClick={() => setShowUploadModal(true)}
+      >
+        <PlusCircle size={80} />
+      </span>
+
+      <hr style={{ marginTop: "12px" }} />
+
       {userData.posts.length === 0 ? (
         <UploadingContainer>
           <CameraIcon size={60} />
@@ -235,7 +244,7 @@ function ProfilePage() {
             When you share photos, they will appear on your profile
           </p>
           <p
-            style={{ fontSize: "14px", color: "skyblue" }}
+            style={{ fontSize: "14px", color: "skyblue", cursor: "pointer" }}
             onClick={() => setShowUploadModal(true)}
           >
             Share your first Photo
@@ -243,15 +252,18 @@ function ProfilePage() {
         </UploadingContainer>
       ) : (
         <PostsGrid>
-          {userData.posts.map((post) => (
-            <PostItem key={post.id} src={post.image_url} alt="Post" />
-          ))}
+          {userData.posts.map((post) => {
+            return <PostItem key={post.id} src={post.media_url} alt="Post" />;
+          })}
         </PostsGrid>
       )}
 
-      {showEditModal && (
+      {showUploadModal && (
         <Modal onClose={() => setShowUploadModal(false)}>
-          <UploadPost onClose={() => setShowUploadModal(false)} />
+          <UploadPost
+            userId={userData.id}
+            onClose={() => setShowUploadModal(false)}
+          />
         </Modal>
       )}
     </ProfileContainer>

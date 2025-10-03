@@ -75,6 +75,7 @@ function BarOptions({
   query,
   onUserSelect,
   setSidebarCompact,
+
 }) {
   // LEFT-PANELS use activeComponent explicitly
   // GLOBAL POPUPS use activeMenu explicitly

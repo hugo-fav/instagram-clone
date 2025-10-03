@@ -18,12 +18,15 @@ import {
 import Link from "next/link";
 import styled from "styled-components";
 
-/* --- keep your original styled-components exactly as before --- */
-/* I reproduce them here to make the file self-contained. */
 
 const SideNavbar = styled.div`
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
   display: flex;
+  /* flex: 0 0 220px; */
   flex-direction: column;
   width: ${(props) => (props.$isMobileMode ? "80px" : "220px")};
   height: 100vh;
@@ -33,6 +36,7 @@ const SideNavbar = styled.div`
   transition: width 0.3s ease;
   border-right: ${(props) =>
     props.$isMobileMode ? "none" : "1px solid #292929ff"};
+  background: #000; 
 
   span {
     display: ${(props) => (props.$isMobileMode ? "none" : "block")};
@@ -51,14 +55,14 @@ const SideNavbar = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
+    top: auto;
     flex-direction: row;
     width: 100%;
     height: 60px;
     padding: 0 10px;
     border-right: none;
     border-top: 1px solid #292929ff;
-    /* background: #000; */
-
+    z-index: 100;
     span,
     p,
     h3 {
@@ -80,8 +84,8 @@ const TopNavbar = styled.div`
     align-items: center;
     gap: 10px;
     padding: 0 12px;
-    /* background: #000; */
-    /* border-bottom: 1px solid #292929ff; */
+    background: #000;
+    border-bottom: 1px solid #292929ff;
     z-index: 1000;
   }
 `;
@@ -374,7 +378,7 @@ function SidebarNav({
         <IconNdName
           href="/explore"
           $active={isLeftActive("explore") || isGlobalActive("explore")}
-          $hideOnBottom={true}
+          $hideOnBottom={false}
           onClick={() => setActiveMenu && setActiveMenu("explore")}
         >
           <BadgePlus size={27} />
@@ -401,6 +405,7 @@ function SidebarNav({
         <IconButtonNdName
           $active={isLeftActive("notifications")}
           onClick={() => handlePanelClick("notifications")}
+          $hideOnBottom={true}
         >
           <Heart size={27} />
           <span>Notifications</span>

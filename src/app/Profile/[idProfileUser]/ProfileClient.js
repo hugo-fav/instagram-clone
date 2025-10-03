@@ -6,6 +6,7 @@ import Modal from "@/components/Modal";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "@/logic/EditProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import PostItem from "@/components/sidebarOptions/PostItem";
 
 /* ---------- styled components (kept your style) ---------- */
 const ProfileContainer = styled.div`
@@ -85,17 +86,10 @@ const DisplayName = styled.div`
 
 const PostsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   margin-top: 2rem;
-  color: aliceblue;
-`;
-
-const PostItem = styled.img`
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-  border-radius: 8px;
+  /* color: aliceblue; */
 `;
 
 const DebugBox = styled.pre`
@@ -198,7 +192,7 @@ export default function ProfileClient({ username }) {
         // Fetch posts
         const { data: postsData, error: postsError } = await supabase
           .from("posts")
-          .select("id, image_url, caption, created_at")
+          .select("id, media_url, caption, created_at")
           .eq("user_id", profilesData.id)
           .order("created_at", { ascending: false });
 
@@ -388,12 +382,12 @@ export default function ProfileClient({ username }) {
           userData.posts.map((post) => (
             <PostItem
               key={post.id}
-              src={post.image_url || "/placeholder.png"}
+              src={post.media_url || "/placeholder.png"}
               alt={post.caption || "Post"}
             />
           ))
         ) : (
-          <p>Share your first photo</p>
+          <p>user has not posted any images</p>
         )}
       </PostsGrid>
 

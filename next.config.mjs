@@ -4,7 +4,16 @@ const nextConfig = {
     styledComponents: true,
   },
   experimental: {
-    turbo: false, // disables Turbopack
+    turbo: false,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+    ],
   },
 };
 
