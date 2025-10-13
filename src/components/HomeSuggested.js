@@ -2,6 +2,11 @@ import { supabase } from "@/libs/supabseClient";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import styled from "styled-components";
+import Link from "next/link";
+
+const Container = styled.div`
+  /* container styles if needed */
+`;
 
 const UserCard = styled.div`
   display: flex;
@@ -9,6 +14,15 @@ const UserCard = styled.div`
   gap: 1rem;
   margin-bottom: 1rem;
   margin-top: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+`;
+
+const UserLink = styled(Link)`
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  display: block;
 `;
 
 const Avatar = styled.img`
@@ -120,18 +134,20 @@ export default function HomeSuggested() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div>
+    <Container>
       {userSuggestions.length === 0 ? (
         <Text>No suggestions available.</Text>
       ) : (
         userSuggestions.map((user) => (
-          <UserCard key={user.id}>
-            <Avatar
-              src={user.avatar_url || "/default-avatar.png"}
-              alt="Profile Picture"
-            />
-            <Text>{user.username}</Text>
-          </UserCard>
+          <UserLink href={`/profile/${user.id}`} key={user.id}>
+            <UserCard>
+              <Avatar
+                src={user.avatar_url || "/default-avatar.png"}
+                alt="Profile Picture"
+              />
+              <Text>{user.username}</Text>
+            </UserCard>
+          </UserLink>
         ))
       )}
 
@@ -141,31 +157,37 @@ export default function HomeSuggested() {
         <Text>No suggestions available.</Text>
       ) : (
         otherSuggestions.map((user) => (
-          <UserCard key={user.id}>
-            <Avatar
-              src={user.avatar_url || "/default-avatar.png"}
-              alt="Profile Picture"
-            />
-            <Text
-              style={{
-                fontWeight: "bold",
-                fontSize: "14px",
-                cursor: "pointer",
-              }}
-            >
-              {user.username}
-            </Text>
-
-            <Button onClick={() => handleFollow(user.id)}>
-              {followLoading && following[user.id] === undefined
-                ? "..."
-                : following[user.id]
-                ? "Unfollow"
-                : "Follow"}
-            </Button>
-          </UserCard>
+          <UserLink href={`/profile/${user.id}`} key={user.id}>
+            <UserCard>
+              <Avatar
+                src={user.avatar_url || "/default-avatar.png"}
+                alt="Profile Picture"
+              />
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                }}
+              >
+                {user.username}
+              </Text>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent navigation when clicking follow
+                  handleFollow(user.id);
+                }}
+              >
+                {followLoading && following[user.id] === undefined
+                  ? "..."
+                  : following[user.id]
+                  ? "Unfollow"
+                  : "Follow"}
+              </Button>
+            </UserCard>
+          </UserLink>
         ))
       )}
-    </div>
+    </Container>
   );
 }

@@ -5,6 +5,7 @@ import { supabase } from "@/libs/supabseClient";
 import styled from "styled-components";
 import Modal from "@/components/Modal";
 import Auth from "@/logic/Auth";
+import SwitchAuthForm from "@/logic/SwitchAccount";
 
 const ButtonItem = styled.button`
   all: unset;
@@ -93,7 +94,7 @@ export default function MorePopupSlide() {
 
       {showAuth && (
         <Modal onClose={() => setShowAuth(false)}>
-          <Auth />
+          <SwitchAuthForm/>
         </Modal>
       )}
     </ListItem>

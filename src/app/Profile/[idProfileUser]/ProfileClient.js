@@ -49,14 +49,8 @@ const EditButton = styled.button`
   padding: 6px 14px;
   font-size: 0.95rem;
   border-radius: 6px;
-  /* border: 1px solid #ccc; */
   cursor: pointer;
-  /* background: white; */
   color: #111;
-
-  &:hover {
-    /* background: #f2f2f2; */
-  }
 `;
 
 const FollowButton = styled.button`

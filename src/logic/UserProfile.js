@@ -85,8 +85,8 @@ const DisplayName = styled.div`
 // Simple grid for posts
 const PostsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr); /* Always 3 columns */
+  gap: 10px;
   margin-top: 2rem;
 `;
 
