@@ -49,6 +49,7 @@ export default function LayoutWrapper({ children }) {
     <AuthGuard>
       <div
         style={{
+          background: "#000",
           display: "flex",
           flexDirection: "row",
           minHeight: "100vh",

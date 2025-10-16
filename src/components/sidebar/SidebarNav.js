@@ -36,7 +36,7 @@ const SideNavbar = styled.div`
   transition: width 0.3s ease;
   border-right: ${(props) =>
     props.$isMobileMode ? "none" : "1px solid #292929ff"};
-  background: #000; 
+  /* background: #000;  */
 
   span {
     display: ${(props) => (props.$isMobileMode ? "none" : "block")};
