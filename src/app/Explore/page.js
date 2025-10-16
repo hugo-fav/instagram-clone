@@ -1,7 +1,7 @@
 "use client";
+
 import LoadingSpinner from "@/components/LoadingSpinner";
 import styled from "styled-components";
-
 import { supabase } from "@/libs/supabseClient";
 import { useEffect, useState } from "react";
 
@@ -30,7 +30,7 @@ const PostCard = styled.div`
   padding: 1px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  break-inside: avoid; /* important: prevents posts from splitting between columns */
+  break-inside: avoid;
 `;
 
 const PostImage = styled.img`
@@ -39,26 +39,35 @@ const PostImage = styled.img`
   display: block;
 `;
 
-export default function HomeFeed() {
+export default function Page() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchRandomPosts = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("posts")
-        .select(
-          "id, media_url, caption, created_at, user_id, profiles(username, avatar_url)"
-        );
+      setErrorMsg("");
+      try {
+        const { data, error } = await supabase
+          .from("posts")
+          .select(
+            "id, media_url, caption, created_at, user_id, profiles(username, avatar_url)"
+          );
 
-      if (error) {
-        console.error("Fetch posts error:", error);
-      } else {
-        const shuffled = data.sort(() => 0.5 - Math.random());
-        setPosts(shuffled.slice(0, 10));
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          setPosts([]);
+        } else {
+          const shuffled = [...data].sort(() => 0.5 - Math.random());
+          setPosts(shuffled.slice(0, 10));
+        }
+      } catch (err) {
+        console.error("Explore fetch error:", err);
+        setErrorMsg(err.message || "Failed to load posts");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchRandomPosts();
@@ -66,15 +75,16 @@ export default function HomeFeed() {
 
   if (loading) return <LoadingSpinner />;
 
+  if (errorMsg) return <div style={{ padding: 24 }}>{errorMsg}</div>;
+
+  if (!posts || posts.length === 0)
+    return <div style={{ padding: 24 }}>No posts available.</div>;
+
   return (
     <FeedWrapper>
       {posts.map((post) => (
         <PostCard key={post.id}>
-          <PostImage src={post.media_url} alt={post.caption} />
-          {/* <p>
-            <strong>@{post.profiles?.username}</strong>
-          </p>
-          <p>{post.caption}</p> */}
+          <PostImage src={post.media_url} alt={post.caption || "post"} />
         </PostCard>
       ))}
     </FeedWrapper>
