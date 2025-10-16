@@ -1,9 +1,10 @@
 "use client";
 /* ----------------- STYLED COMPONENTS ----------------- */
 const Container = styled.div`
-/* position: relative; */
+  /* position: relative; */
+  background: #222;
+  padding: 2rem 3rem;
   margin: auto;
-  padding: 1px;
   border-radius: 16px;
 `;
 

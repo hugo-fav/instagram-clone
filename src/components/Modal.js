@@ -14,7 +14,7 @@ const ModalBackground = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: #222;
+  /* background: #222; */
   padding: 2rem;
   border-radius: 12px;
   min-width: 350px;

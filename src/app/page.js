@@ -46,7 +46,7 @@ const MainContent = styled.div`
 const PostWrapper = styled.div`
   padding: 1rem;
   /* margin-bottom: 2rem; */
-  max-width: 320px;
+  max-width: 480px;
   width: 100%;
 `;
 

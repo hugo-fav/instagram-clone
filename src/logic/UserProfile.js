@@ -3,17 +3,10 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Modal from "@/components/Modal";
-import Auth from "@/logic/Auth";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "./EditProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import {
-  Camera,
-  CameraIcon,
-  CameraOffIcon,
-  CircleArrowLeft,
-  PlusCircle,
-} from "lucide-react";
+import { CameraIcon, PlusCircle } from "lucide-react";
 import UploadPost from "@/components/UploadPost";
 import PostItem from "@/components/sidebarOptions/PostItem";
 
@@ -21,9 +14,17 @@ const ProfileContainer = styled.div`
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+    margin: 2.2rem auto;
+    padding: 1rem;
+  }
 
   @media (max-width: 729px) {
+    
     margin: 2.2rem 0;
+    padding: 0.5rem;
   }
 `;
 
@@ -39,6 +40,16 @@ const Avatar = styled.img`
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
+
+  @media (max-width: 1024px) {
+    width: 100px;
+    height: 100px;
+  }
+
+  @media (max-width: 729px) {
+    width: 150px;
+    height: 150px;
+  }
 `;
 
 const UserInfo = styled.div`
@@ -58,6 +69,8 @@ const Username = styled.h2`
 `;
 
 const EditButton = styled.button`
+  margin-left: 1rem;
+  margin-top: 3rem;
   padding: 6px 14px;
   font-size: 0.95rem;
   border-radius: 4px;
@@ -68,11 +81,12 @@ const EditButton = styled.button`
 
 const StatsRow = styled.div`
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   margin-top: 1rem;
 
   span {
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 100;
     cursor: default;
   }
 `;
@@ -203,23 +217,28 @@ function ProfilePage() {
 
   return (
     <ProfileContainer>
-      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "3rem", alignItems: "center" }}>
         <Avatar src={userData.avatarUrl} alt="Profile Picture" />
+
         <div>
           <UsernameRow>
             <Username>{userData.username}</Username>
-            <EditButton onClick={() => setShowEditModal(true)}>
-              Edit Profile
-            </EditButton>
           </UsernameRow>
+
+          <DisplayName>{userData.displayName}</DisplayName>
+
           <StatsRow>
             <span>{userData.posts.length} posts</span>
             <span>{userData.followers} followers</span>
             <span>{userData.following} following</span>
           </StatsRow>
-          <DisplayName>{userData.displayName}</DisplayName>
         </div>
       </div>
+
+      <EditButton onClick={() => setShowEditModal(true)}>
+        Edit Profile
+      </EditButton>
+      <EditButton>View archive</EditButton>
 
       {showEditModal && (
         <Modal onClose={() => setShowEditModal(false)}>
@@ -227,14 +246,17 @@ function ProfilePage() {
         </Modal>
       )}
 
-      <span
-        style={{ cursor: "pointer" }}
+      <div
+        style={{
+          margin: "20px 0",
+          cursor: "pointer",
+        }}
         onClick={() => setShowUploadModal(true)}
       >
         <PlusCircle size={80} />
-      </span>
+      </div>
 
-      <hr style={{ marginTop: "12px" }} />
+      <div style={{ margin: "20px 0", borderTop: "1px solid #ccc" }}></div>
 
       {userData.posts.length === 0 ? (
         <UploadingContainer>
