@@ -17,12 +17,14 @@ const ProfileContainer = styled.div`
   width: 100%;
 
   /* responsive padding for smaller screens */
-  @media (max-width: 1024px) {
-    padding: 1.5rem;
-  }
 
-  @media (max-width: 480px) {
+  @media (max-width: 1024px) {
+    margin: 2.2rem auto;
     padding: 1rem;
+  }
+  @media (max-width: 729px) {
+    margin: 2.2rem 0;
+    padding: 0.5rem;
   }
 `;
 
@@ -31,11 +33,15 @@ const ProfileHeader = styled.div`
   flex-direction: column;
 
   /* remove large fixed horizontal margin and instead use padding from container */
-  margin: 0;
+  margin: 0 6rem;
 
   /* allow header spacing tweaks on wide screens */
   @media (min-width: 1100px) {
-    margin: 0 2rem;
+    margin: 0 4rem;
+  }
+
+  @media (max-width: 729px) {
+    margin: 2rem 0.5rem;
   }
 `;
 
@@ -47,8 +53,8 @@ const Centered = styled.div`
   gap: 1rem;
 
   /* allow wrapping on smaller viewports so avatar and info stack vertically */
-  @media (max-width: 720px) {
-    flex-direction: column;
+  @media (max-width: 729px) {
+    flex-direction: row;
     align-items: center;
     gap: 0.75rem;
   }
@@ -56,18 +62,18 @@ const Centered = styled.div`
 
 const Avatar = styled.img`
   width: 150px;
-  height: 150px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
 
   @media (max-width: 1024px) {
-    width: 120px;
+    width: 150px;
     height: 120px;
   }
 
-  @media (max-width: 480px) {
-    width: 110px;
-    height: 110px;
+  @media (max-width: 729px) {
+    width: 100px;
+    height: 100px;
   }
 `;
 
@@ -150,14 +156,9 @@ const DisplayName = styled.div`
 /* Make grid responsive with auto-fit / minmax so posts adapt to screen size */
 const PostsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-top: 2rem;
-
-  /* prefer 3 columns on larger screens (keeps look similar to original) */
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
 `;
 
 const Line = styled.div`
