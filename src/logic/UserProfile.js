@@ -16,23 +16,42 @@ const ProfileContainer = styled.div`
   padding: 2rem;
   width: 100%;
 
+  /* responsive padding for smaller screens */
   @media (max-width: 1024px) {
-    margin: 2.2rem auto;
-    padding: 1rem;
+    padding: 1.5rem;
   }
 
-  @media (max-width: 729px) {
-    
-    margin: 2.2rem 0;
-    padding: 0.5rem;
+  @media (max-width: 480px) {
+    padding: 1rem;
   }
 `;
 
 const ProfileHeader = styled.div`
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+
+  /* remove large fixed horizontal margin and instead use padding from container */
+  margin: 0;
+
+  /* allow header spacing tweaks on wide screens */
+  @media (min-width: 1100px) {
+    margin: 0 2rem;
+  }
+`;
+
+/* Centered: allow stacking on narrow screens while keeping horizontal layout on wider screens */
+const Centered = styled.div`
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 2rem;
+  gap: 1rem;
+
+  /* allow wrapping on smaller viewports so avatar and info stack vertically */
+  @media (max-width: 720px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
 `;
 
 const Avatar = styled.img`
@@ -42,76 +61,132 @@ const Avatar = styled.img`
   object-fit: cover;
 
   @media (max-width: 1024px) {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
   }
 
-  @media (max-width: 729px) {
-    width: 150px;
-    height: 150px;
+  @media (max-width: 480px) {
+    width: 110px;
+    height: 110px;
   }
 `;
 
 const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
+
+  /* ensure text doesn't overflow on small screens */
+  min-width: 0;
+  width: 100%;
 `;
 
 const UsernameRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
 `;
 
 const Username = styled.h2`
   font-size: 1.8rem;
   font-weight: 600;
+  margin: 0;
+
+  @media (max-width: 720px) {
+    font-size: 1.4rem;
+    text-align: center;
+    word-break: break-word;
+  }
 `;
 
 const EditButton = styled.button`
-  margin-left: 1rem;
-  margin-top: 3rem;
-  padding: 6px 14px;
+  margin: 1.4rem 0 2rem 0;
+  padding: 14px 6.2rem;
   font-size: 0.95rem;
-  border-radius: 4px;
+  border-radius: 13px;
   border: none;
   cursor: pointer;
-  /* background: white; */
+  background: #292929ff;
+  color: #fff;
+  transition: transform 120ms ease, opacity 120ms ease;
+  min-width: 110px;
+
+  /* scale down padding on smaller screens while keeping shape */
+  @media (max-width: 900px) {
+    padding: 10px 2rem;
+  }
+
+  @media (max-width: 420px) {
+    padding: 8px 1.2rem;
+    font-size: 0.85rem;
+  }
 `;
 
 const StatsRow = styled.div`
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 
   span {
     font-size: 0.9rem;
     font-weight: 100;
     cursor: default;
   }
+
+  @media (max-width: 480px) {
+    gap: 0.6rem;
+
+    span {
+      font-size: 0.85rem;
+    }
+  }
 `;
 
 const DisplayName = styled.div`
   margin-top: 1rem;
   font-weight: 500;
+  word-break: break-word;
 `;
 
-// Simple grid for posts
+/* Make grid responsive with auto-fit / minmax so posts adapt to screen size */
 const PostsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Always 3 columns */
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 10px;
   margin-top: 2rem;
+
+  /* prefer 3 columns on larger screens (keeps look similar to original) */
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 `;
 
-const UploadingContainers = styled.div`
-  flex: 1; /* take up available space */
+const Line = styled.div`
+  margin: 20px 0;
+  border-top: 1px solid #292929ff;
+`;
+
+const CenteredButtons = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex-direction: row; /* keep row on all viewports */
   align-items: center;
-  justify-content: center; /* centers vertically */
-  min-height: 60vh; /* fallback so it's tall enough */
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+
+  @media (max-width: 720px) {
+    justify-content: center;
+  }
+`;
+
+/* Keep the naming used in the original file (ButtonsColumn) — only tweak CSS to be responsive */
+const ButtonsColumn = styled.div`
+  display: flex;
+  flex-direction: row; /* row for all viewports */
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center; /* center the buttons horizontally */
+  width: 100%;
+  flex-wrap: wrap; /* allow wrap on tiny screens */
 `;
 
 const UploadingContainer = styled.div`
@@ -122,14 +197,20 @@ const UploadingContainer = styled.div`
   align-items: center;
   justify-content: center;
   min-height: 60vh;
+  text-align: center;
+  padding: 0 1rem;
 `;
 
 const UploadingContainerHead = styled.h2`
   font-size: 1.8rem;
   font-weight: 800;
+
+  @media (max-width: 480px) {
+    font-size: 1.4rem;
+  }
 `;
 
-function ProfilePage() {
+export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -217,46 +298,61 @@ function ProfilePage() {
 
   return (
     <ProfileContainer>
-      <div style={{ display: "flex", gap: "3rem", alignItems: "center" }}>
-        <Avatar src={userData.avatarUrl} alt="Profile Picture" />
+      <ProfileHeader>
+        <Centered>
+          <Avatar src={userData.avatarUrl} alt="Profile Picture" />
 
-        <div>
-          <UsernameRow>
-            <Username>{userData.username}</Username>
-          </UsernameRow>
+          <UserInfo>
+            <UsernameRow>
+              <Username>{userData.username}</Username>
+            </UsernameRow>
 
-          <DisplayName>{userData.displayName}</DisplayName>
+            <DisplayName>{userData.displayName}</DisplayName>
 
-          <StatsRow>
-            <span>{userData.posts.length} posts</span>
-            <span>{userData.followers} followers</span>
-            <span>{userData.following} following</span>
-          </StatsRow>
-        </div>
-      </div>
+            <StatsRow>
+              <span>{userData.posts.length} posts</span>
+              <span>{userData.followers} followers</span>
+              <span>{userData.following} following</span>
+            </StatsRow>
+          </UserInfo>
+        </Centered>
 
-      <EditButton onClick={() => setShowEditModal(true)}>
-        Edit Profile
-      </EditButton>
-      <EditButton>View archive</EditButton>
+        <ButtonsColumn>
+          <EditButton onClick={() => setShowEditModal(true)}>
+            Edit Profile
+          </EditButton>
+          <EditButton>View archive</EditButton>
+        </ButtonsColumn>
 
-      {showEditModal && (
-        <Modal onClose={() => setShowEditModal(false)}>
-          <EditProfile onClose={() => setShowEditModal(false)} />
-        </Modal>
-      )}
+        <span
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            margin: "20px 0",
+            cursor: "pointer",
+            color: "#292929ff",
+            alignItems: "flex-start",
+          }}
+          onClick={() => setShowUploadModal(true)}
+        >
+          <PlusCircle size={80} />
+          <span
+            style={{
+              fontSize: "14px",
+              color: "white",
+              margin: "6px 0 0 25px",
+              marginTop: "5px",
+              fontWeight: "500",
+              letterSpacing: "1px",
+              cursor: "pointer",
+            }}
+          >
+            New
+          </span>
+        </span>
+      </ProfileHeader>
 
-      <div
-        style={{
-          margin: "20px 0",
-          cursor: "pointer",
-        }}
-        onClick={() => setShowUploadModal(true)}
-      >
-        <PlusCircle size={80} />
-      </div>
-
-      <div style={{ margin: "20px 0", borderTop: "1px solid #ccc" }}></div>
+      <Line></Line>
 
       {userData.posts.length === 0 ? (
         <UploadingContainer>
@@ -280,6 +376,13 @@ function ProfilePage() {
         </PostsGrid>
       )}
 
+      {/* Edit Profile Modal  */}
+      {showEditModal && (
+        <Modal onClose={() => setShowEditModal(false)}>
+          <EditProfile onClose={() => setShowEditModal(false)} />
+        </Modal>
+      )}
+      {/* Upload Post Modal */}
       {showUploadModal && (
         <Modal onClose={() => setShowUploadModal(false)}>
           <UploadPost
@@ -292,4 +395,4 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;
+ProfilePage;
