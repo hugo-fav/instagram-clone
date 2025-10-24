@@ -11,7 +11,6 @@ const Container = styled.div`
   max-width: 400px;
   right: clamp(1rem, 6vw, 3%);
   top: 0px;
-
 `;
 
 const UserCard = styled.div`

@@ -1,10 +1,11 @@
+"use client";
 import styled from "styled-components";
 import ImgIdModal from "./ImgIdModal";
 import CommentModal from "./CommentModal";
 
-export default function ClickedOnCommentSty({selectedPostId}) {
+export default function ClickedOnCommentSty({ selectedPostId }) {
   return (
-    <Container>
+    <Container role="dialog" aria-modal="true">
       <LeftPane>
         <PaneInner>
           <ImgIdModal imgId={selectedPostId} />
@@ -20,38 +21,49 @@ export default function ClickedOnCommentSty({selectedPostId}) {
   );
 }
 
+/* Layout */
 const Container = styled.div`
   display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+  align-items: stretch;
   width: 100%;
   box-sizing: border-box;
+  height: 84vh;
+  max-height: 100vh;
+  /* gap: 1rem; */
+  padding: 1rem;
 
   @media (max-width: 820px) {
     flex-direction: column;
+    height: auto;
   }
 `;
 
-/* Left and right panes always reserve space even if their child hides itself */
 const LeftPane = styled.div`
   flex: 2 1 0%;
-  min-width: 360px; /* reserves space on small/medium screens */
+  min-width: 320px;
   box-sizing: border-box;
   display: flex;
+  align-items: center;
   justify-content: center;
+  background: #fff;
+  /* border-radius: 12px; */
+  overflow: hidden;
 `;
 
 const RightPane = styled.div`
   flex: 1 1 0%;
-  min-width: 300px; /* reserves sidebar width */
+  min-width: 300px;
   box-sizing: border-box;
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  background: #0f2730;
+  border-radius: 0 12px 12px 0;
+  overflow: hidden;
 `;
 
-/* Inner wrapper holds the actual component. If the child returns null or sets display:none,
-   this wrapper still keeps the layout space. */
 const PaneInner = styled.div`
   width: 100%;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 `;
