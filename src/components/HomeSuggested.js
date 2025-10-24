@@ -5,10 +5,17 @@ import styled from "styled-components";
 import Link from "next/link";
 
 const Container = styled.div`
-  /* container styles if needed */
+  position: absolute;
+  padding: 0 4rem;
+  width: 100%;
+  max-width: 400px;
+  right: clamp(1rem, 6vw, 3%);
+  top: 0px;
+
 `;
 
 const UserCard = styled.div`
+  /* margin: auto; */
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -21,7 +28,6 @@ const UserCard = styled.div`
 const UserLink = styled(Link)`
   text-decoration: none;
   color: inherit;
-  width: 100%;
   display: block;
 `;
 
@@ -42,7 +48,8 @@ const Button = styled.button`
   border: none;
   color: blue;
   cursor: pointer;
-  margin: auto;
+  font-weight: 600;
+  margin-left: auto;
 `;
 
 export default function HomeSuggested() {

@@ -24,13 +24,14 @@ const slideOut = keyframes`
 `;
 
 const SideNavbar = styled.div`
+  background: #000;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #292929ff;
   /* border-radius: 0 40px 50px 0; */
   height: 100vh;
-  width: 350px;
-  padding: 0px;
+  width: 400px;
+  padding: 0px 1rem;
   overflow-y: auto;
   margin: 0;
 
@@ -47,7 +48,7 @@ const SideNavbar = styled.div`
 const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: bold;
-  /* margin: 0 0 1.9rem 0; */
+  margin: 0.3rem 0 0rem 0;
   padding: 1rem 8px;
 `;
 const NotificationHead = styled.p`

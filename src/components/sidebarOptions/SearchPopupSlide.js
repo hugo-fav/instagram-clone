@@ -27,16 +27,17 @@ const spin = keyframes`
 // `;
 
 const SideNavbar = styled.div`
+  background: #000;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #292929ff;
   border-radius: 0 24px 24px 0;
   height: 100vh;
-  width: 320px;
-  padding: 1rem;
+  width: 400px;
+  padding: 0 2rem;
   overflow-y: auto;
   animation: ${slideIn} 0.4s ease-out forwards;
-  /* margin: 0; */
+  margin: 0;
 
   @media (max-width: 729px) {
     display: none;
@@ -47,27 +48,29 @@ const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: 600;
   color: #fff;
-  margin-bottom: 1.5rem;
+  margin: 2rem 0 1.5rem 1rem;
 `;
 
 const SearchInput = styled.input`
-  width: 100%;
+  margin: auto;
+  width: 90%;
   padding: 0.7rem 1.2rem;
   border: none;
   border-radius: 999px;
   background: #2a2a2a;
-  color: #fff;
+  /* color: #fff; */
   font-size: 1rem;
   &::placeholder {
     color: #888;
   }
   &:focus {
-    outline: 2px solid #4a90e2;
+    outline: none;
   }
 `;
 
 const Divider = styled.div`
-  margin: 1.5rem 0;
+  margin: 1.4rem 0;
+  padding: 0;
   border-bottom: 1px solid #2c2c2c;
 `;
 
@@ -75,7 +78,7 @@ const SectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #aaa;
+  /* color: #aaa; */
   font-size: 0.9rem;
   margin-bottom: 0.8rem;
 

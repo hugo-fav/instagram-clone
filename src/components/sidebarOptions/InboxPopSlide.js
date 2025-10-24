@@ -28,13 +28,14 @@ const slideOut = keyframes`
 `;
 
 const SideNavbar = styled.div`
+  background: #000;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #292929ff;
   /* border-radius: 0 40px 50px 0; */
   height: 100vh;
-  width: 350px;
-  padding: 0px;
+  width: 400px;
+  padding: 0 2rem;
   overflow-y: auto;
   margin: 0;
 
@@ -52,11 +53,13 @@ const Title = styled.h1`
   font-size: 1.5rem;
   font-weight: bold;
   /* margin: 0 0 1.9rem 0; */
+  margin: .3rem 0 0rem .3rem;
   padding: 1rem 8px;
 `;
 
 const SearchInput = styled.input`
   border: none;
+  margin: 1rem auto 1rem auto;
   border-radius: 4px;
   padding: 14px 22px;
   width: 95%;

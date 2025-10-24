@@ -13,13 +13,13 @@ import CreatePopup from "./CreatePopup";
 const PopSlide = styled.div`
   position: fixed;
   top: 0;
-  left: ${(props) => (props.$show ? "90px" : "-300px")};
-  width: 300px;
+  left: ${(props) => (props.$show ? "60px" : "-300px")};
+  width: 00px;
   height: 100vh;
   box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
   transition: left 0.28s ease;
-  padding: 20px;
-  background: ${({ theme }) => theme.colors?.backgroundSecondary || "#0b0b0b"};
+  padding: 0px 20px;
+  /* background: ${({ theme }) => theme.colors?.backgroundSecondary || "#0b0b0b"}; */
   z-index: 1100; /* slides below overlays */
 `;
 

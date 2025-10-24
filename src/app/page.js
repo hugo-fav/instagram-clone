@@ -1,5 +1,6 @@
 "use client";
 
+import CommentAndLike from "@/components/commentsandlikesonpost/CommentandLike";
 import HomeSuggested from "@/components/HomeSuggested";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { supabase } from "@/libs/supabseClient";
@@ -38,7 +39,7 @@ const MainContent = styled.div`
     width: 100%;
   }
 
-   @media (max-width: 729px) {
+  @media (max-width: 729px) {
     margin-top: 2.3rem;
   }
 `;
@@ -140,6 +141,7 @@ export default function Page() {
                   width={300}
                   height={300}
                 />
+                <CommentAndLike postId={post.id} />
               </PostWrapper>
             ))}
       </MainContent>
