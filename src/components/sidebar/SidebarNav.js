@@ -18,7 +18,6 @@ import {
 import Link from "next/link";
 import styled from "styled-components";
 
-
 const SideNavbar = styled.div`
   position: fixed;
   top: 0;
@@ -51,6 +50,7 @@ const SideNavbar = styled.div`
   }
 
   @media (max-width: 729px) {
+    background: #000;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -345,6 +345,20 @@ function SidebarNav({
             >
               <Bell size={22} />
             </button>
+
+            <button
+              type="button"
+              onClick={() => handlePanelClick("inbox")}
+              style={{
+                background: "none",
+                border: "none",
+                padding: 6,
+                cursor: "pointer",
+              }}
+              aria-label="Messages"
+            >
+              <MessageCircle size={22} />
+            </button>
           </TopRight>
         </TopLeft>
       </TopNavbar>
@@ -397,6 +411,7 @@ function SidebarNav({
         <IconButtonNdName
           $active={isLeftActive("inbox")}
           onClick={() => handlePanelClick("inbox")}
+          $hideOnBottom={true}
         >
           <MessageCircle size={27} />
           <span>Messages</span>

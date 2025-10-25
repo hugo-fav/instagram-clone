@@ -59,6 +59,10 @@ const RightPane = styled.div`
   background: #0f2730;
   border-radius: 0 12px 12px 0;
   overflow: hidden;
+
+  @media (max-width: 820px) {
+    border-radius: 0 0 12px 12px;
+  }
 `;
 
 const PaneInner = styled.div`
