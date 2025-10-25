@@ -62,7 +62,7 @@ const SideNavbar = styled.div`
     padding: 0 10px;
     border-right: none;
     border-top: 1px solid #292929ff;
-    /* z-index: 99999 !important; */
+    z-index: 99999 !important;
     span,
     p,
     h3 {

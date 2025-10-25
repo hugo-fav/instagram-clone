@@ -1,9 +1,9 @@
-// components/UploadPost.jsx
 "use client";
 
 import { useState } from "react";
 import { supabase } from "@/libs/supabseClient";
 import Image from "next/image";
+import styled from "styled-components";
 
 export default function UploadPost({ userId, onClose, onUploaded }) {
   const [caption, setCaption] = useState("");
@@ -11,7 +11,7 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const bucket = "posts"; // <- confirm that you have a 'posts' bucket in Supabase storage
+  const bucket = "posts";
 
   const handleFileChange = (e) => {
     const f = e.target.files?.[0] ?? null;
@@ -30,46 +30,31 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
 
     setLoading(true);
     try {
-      // create a file path (organize by user id for convenience)
       const ext = file.name.split(".").pop();
       const fileName = `${Date.now()}.${ext}`;
       const filePath = `${userId}/${fileName}`;
 
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(bucket)
         .upload(filePath, file, { cacheControl: "3600", upsert: false });
 
-      if (uploadError) {
-        console.error("Storage upload error:", uploadError);
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
-      // get public url
       const { data: publicUrlData } = supabase.storage
         .from(bucket)
         .getPublicUrl(filePath);
 
       const publicUrl =
         publicUrlData?.publicUrl || publicUrlData?.public_url || null;
-      if (!publicUrl) {
-        console.warn("No public URL returned. Check bucket privacy settings.");
-      }
 
-      console.log("Public URL:", publicUrl);
-
-      // insert into posts table
       const { error: insertError } = await supabase.from("posts").insert({
         user_id: userId,
         media_url: publicUrl,
         caption,
       });
 
-      if (insertError) {
-        console.error("Insert post error:", insertError);
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
-      // success
       if (onUploaded) onUploaded();
       if (onClose) onClose();
     } catch (err) {
@@ -81,62 +66,120 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
   };
 
   return (
-    <div style={{ paddingTop: 12 }}>
-      <label style={{ display: "block", marginBottom: 8 }}>
+    <Container>
+      <Label>
         Select image
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ display: "block", marginTop: 8 }}
-        />
-      </label>
+        <FileInput type="file" accept="image/*" onChange={handleFileChange} />
+      </Label>
 
       {previewUrl && (
-        <div style={{ marginBottom: 8 }}>
-          <Image src={previewUrl} alt="preview" width={50} height={50} />
-        </div>
+        <PreviewWrapper>
+          <Image src={previewUrl} alt="preview" width={80} height={80} />
+        </PreviewWrapper>
       )}
 
-      <textarea
+      <CaptionInput
         placeholder="Write a caption..."
         value={caption}
         onChange={(e) => setCaption(e.target.value)}
         rows={3}
-        style={{ width: "100%", marginTop: 8, padding: 8, borderRadius: 6 }}
       />
 
-      <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
-        <button
-          onClick={handleUpload}
-          disabled={loading}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 6,
-            cursor: "pointer",
-            background: "#4a90e2",
-            color: "#fff",
-            border: "none",
-          }}
-        >
+      <ButtonGroup>
+        <UploadButton onClick={handleUpload} disabled={loading}>
           {loading ? "Uploading..." : "Upload"}
-        </button>
-
-        <button
-          onClick={() => {
-            if (onClose) onClose();
-          }}
-          style={{
-            padding: "8px 12px",
-            borderRadius: 6,
-            cursor: "pointer",
-            background: "#eee",
-            border: "none",
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
+        </UploadButton>
+        <CancelButton onClick={onClose}>Cancel</CancelButton>
+      </ButtonGroup>
+    </Container>
   );
 }
+
+// ---------------- Styled Components ---------------- //
+
+const Container = styled.div`
+  background-color: rgba(197, 197, 197, 0.5);
+  padding: 20px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const Label = styled.label`
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #333;
+`;
+
+const FileInput = styled.input`
+  display: block;
+  margin-top: 8px;
+`;
+
+const PreviewWrapper = styled.div`
+  margin: 10px 0;
+  display: flex;
+  justify-content: center;
+`;
+
+const CaptionInput = styled.textarea`
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  resize: none;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+
+  &:focus {
+    border-color: #4a90e2;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+`;
+
+const UploadButton = styled.button`
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #4a90e2;
+  color: white;
+  font-weight: 500;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #357ab8;
+  }
+
+  &:disabled {
+    background: #9cc3ee;
+    cursor: not-allowed;
+  }
+`;
+
+const CancelButton = styled.button`
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #333;
+  font-weight: 500;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #d1d5db;
+  }
+`;

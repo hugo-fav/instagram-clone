@@ -325,9 +325,9 @@ export default function ProfilePage() {
           <EditButton>View archive</EditButton>
         </ButtonsColumn>
 
-        <span
+        <div
           style={{
-            display: "flex",
+            display: "inline-flex",
             flexDirection: "column",
             margin: "20px 0",
             cursor: "pointer",
@@ -350,7 +350,7 @@ export default function ProfilePage() {
           >
             New
           </span>
-        </span>
+        </div>
       </ProfileHeader>
 
       <Line></Line>

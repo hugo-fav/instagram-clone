@@ -10,19 +10,17 @@ import PostItem from "@/components/sidebarOptions/PostItem";
 
 /* ---------- styled components (kept your style) ---------- */
 const ProfileContainer = styled.div`
-  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
-  /* color: #fff; */
+  /* z-index: 1; */
 
   @media (max-width: 729px) {
-    margin: 2rem 0rem;
+    margin: 3.3rem 0rem;
   }
 `;
 
 const Avatar = styled.img`
-  width: 150px;
-  height: 150px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   object-fit: cover;
   background: #2a2a2a;
