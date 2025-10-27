@@ -27,14 +27,20 @@ const Container = styled.div`
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
-  height: 84vh;
+  height: 80vh;
   max-height: 100vh;
   /* gap: 1rem; */
   padding: 1rem;
 
+  @media (max-width: 1204px) {
+    flex-direction: column;
+    height: 90vh;
+    width: 100%;
+  }
+
   @media (max-width: 820px) {
     flex-direction: column;
-    height: auto;
+    height: 90vh;
   }
 `;
 
@@ -45,7 +51,7 @@ const LeftPane = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #000;
   /* border-radius: 12px; */
   overflow: hidden;
 `;
@@ -56,9 +62,13 @@ const RightPane = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background: #0f2730;
+  background: #072631ff;
   border-radius: 0 12px 12px 0;
   overflow: hidden;
+
+  @media (max-width: 1024px) {
+    border-radius: 0 0 12px 12px;
+  }
 
   @media (max-width: 820px) {
     border-radius: 0 0 12px 12px;

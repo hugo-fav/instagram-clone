@@ -98,7 +98,7 @@ export default function UploadPost({ userId, onClose, onUploaded }) {
 // ---------------- Styled Components ---------------- //
 
 const Container = styled.div`
-  background-color: rgba(197, 197, 197, 0.5);
+  background-color: #545353ff;
   padding: 20px;
   border-radius: 12px;
   width: 100%;

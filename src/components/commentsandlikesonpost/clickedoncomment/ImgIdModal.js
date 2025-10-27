@@ -90,7 +90,7 @@ const Container = styled.div`
   justify-content: center;
   padding: 1rem;
   box-sizing: border-box;
-  background: #fff;
+  background: #000;
 `;
 
 const Figure = styled.div`

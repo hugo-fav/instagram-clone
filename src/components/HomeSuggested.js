@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import styled from "styled-components";
 import Link from "next/link";
+import LoadingSpinnerHomeSuggested from "./LoadingSpinnerHomeSuggested";
 
 const Container = styled.div`
   position: absolute;
+  /* border: 1px solid #ccc; */
   padding: 0 4rem;
   width: 100%;
   max-width: 400px;
@@ -137,7 +139,12 @@ export default function HomeSuggested() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading)
+    return (
+      <div style={{ position: "relative", height: "200px" }}>
+        <LoadingSpinnerHomeSuggested />
+      </div>
+    );
 
   return (
     <Container>
