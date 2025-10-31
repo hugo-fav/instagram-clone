@@ -6,9 +6,14 @@ import Modal from "@/components/Modal";
 import { supabase } from "@/libs/supabseClient";
 import EditProfile from "./EditProfile";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { CameraIcon, PlusCircle } from "lucide-react";
+import { CameraIcon, Heart, MessageCircle, PlusCircle } from "lucide-react";
 import UploadPost from "@/components/UploadPost";
 import PostItem from "@/components/sidebarOptions/PostItem";
+import OpenCommentWhenImgClicked from "@/components/commentsandlikesonpost/OpenCommentWhenImgClicked";
+import CommentandLikeModal from "@/components/commentsandlikesonpost/CommentandLikeModal";
+import ClickedOnCommentSty from "@/components/commentsandlikesonpost/clickedoncomment/ClickedOnCommentSty";
+import CommentAndLike from "@/components/commentsandlikesonpost/CommentandLike";
+import HoverContainer from "@/components/HoverContainer";
 
 const ProfileContainer = styled.div`
   max-width: 900px;
@@ -155,6 +160,7 @@ const DisplayName = styled.div`
 
 /* Make grid responsive with auto-fit / minmax so posts adapt to screen size */
 const PostsGrid = styled.div`
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
@@ -166,26 +172,12 @@ const Line = styled.div`
   border-top: 1px solid #292929ff;
 `;
 
-const CenteredButtons = styled.div`
-  display: flex;
-  flex-direction: row; /* keep row on all viewports */
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-
-  @media (max-width: 720px) {
-    justify-content: center;
-  }
-`;
-
-/* Keep the naming used in the original file (ButtonsColumn) — only tweak CSS to be responsive */
 const ButtonsColumn = styled.div`
   display: flex;
-  flex-direction: row; /* row for all viewports */
+  flex-direction: row;
   gap: 0.75rem;
   align-items: center;
-  justify-content: center; /* center the buttons horizontally */
+  justify-content: center;
   width: 100%;
   flex-wrap: wrap; /* allow wrap on tiny screens */
 `;
@@ -211,10 +203,19 @@ const UploadingContainerHead = styled.h2`
   }
 `;
 
+
+
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const {
+    handleOpenComments,
+    handleCloseComments,
+    showCommentModal,
+    selectedPostId,
+  } = OpenCommentWhenImgClicked();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -372,9 +373,23 @@ export default function ProfilePage() {
       ) : (
         <PostsGrid>
           {userData.posts.map((post) => {
-            return <PostItem key={post.id} src={post.media_url} alt="Post" />;
+            return (
+              <HoverContainer key={post.id} overlayContent={<CommentAndLike />}>
+                <PostItem
+                  onClick={() => handleOpenComments(post.id)}
+                  src={post.media_url}
+                  alt="Post"
+                />
+              </HoverContainer>
+            );
           })}
         </PostsGrid>
+      )}
+
+      {showCommentModal && (
+        <CommentandLikeModal onClose={handleCloseComments}>
+          <ClickedOnCommentSty selectedPostId={selectedPostId} />
+        </CommentandLikeModal>
       )}
 
       {/* Edit Profile Modal  */}

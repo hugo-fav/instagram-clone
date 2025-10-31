@@ -2,97 +2,169 @@
 
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import Modal from "@/components/Modal";
+
 import { supabase } from "@/libs/supabseClient";
-import EditProfile from "@/logic/EditProfile";
+
 import LoadingSpinner from "@/components/LoadingSpinner";
 import PostItem from "@/components/sidebarOptions/PostItem";
 
-/* ---------- styled components (kept your style) ---------- */
+import CommentandLikeModal from "@/components/commentsandlikesonpost/CommentandLikeModal";
+import ClickedOnCommentSty from "@/components/commentsandlikesonpost/clickedoncomment/ClickedOnCommentSty";
+import OpenCommentWhenImgClicked from "@/components/commentsandlikesonpost/OpenCommentWhenImgClicked";
+import HoverContainer from "@/components/HoverContainer";
+import CommentAndLike from "@/components/commentsandlikesonpost/CommentandLike";
+
+/* ---------- styled components (use same styles as src/logic/UserProfile.js) ---------- */
 const ProfileContainer = styled.div`
+  max-width: 900px;
   margin: 0 auto;
-  /* z-index: 1; */
+  padding: 2rem;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+    margin: 2.2rem auto;
+    padding: 1rem;
+  }
+  @media (max-width: 729px) {
+    margin: 2.2rem 0;
+    padding: 0.5rem;
+  }
+`;
+
+const ProfileHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 6rem;
+
+  @media (min-width: 1100px) {
+    margin: 0 4rem;
+  }
 
   @media (max-width: 729px) {
-    margin: 3.3rem 0rem;
+    margin: 2rem 0.5rem;
+  }
+`;
+
+const Centered = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+
+  @media (max-width: 729px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
   }
 `;
 
 const Avatar = styled.img`
-  width: 110px;
-  height: 110px;
+  width: 150px;
+  height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  background: #2a2a2a;
+
+  @media (max-width: 1024px) {
+    width: 150px;
+    height: 120px;
+  }
+
+  @media (max-width: 729px) {
+    width: 100px;
+    height: 100px;
+  }
 `;
 
 const UserInfo = styled.div`
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  width: 100%;
 `;
 
 const UsernameRow = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
 `;
 
 const Username = styled.h2`
   font-size: 1.8rem;
   font-weight: 600;
   margin: 0;
-`;
 
-const EditButton = styled.button`
-  padding: 6px 14px;
-  font-size: 0.95rem;
-  border-radius: 6px;
-  cursor: pointer;
-  color: #111;
-`;
-
-const FollowButton = styled.button`
-  padding: 6px 14px;
-  font-size: 0.95rem;
-  border-radius: 6px;
-  border: 1px solid #4a90e2;
-  cursor: pointer;
-  background: #4a90e2;
-  color: white;
+  @media (max-width: 720px) {
+    font-size: 1.4rem;
+    text-align: center;
+    word-break: break-word;
+  }
 `;
 
 const StatsRow = styled.div`
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 
   span {
-    font-weight: 500;
+    font-size: 0.9rem;
+    font-weight: 100;
+    cursor: default;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.6rem;
+
+    span {
+      font-size: 0.85rem;
+    }
   }
 `;
 
 const DisplayName = styled.div`
   margin-top: 1rem;
   font-weight: 500;
+  word-break: break-word;
 `;
 
 const PostsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
   margin-top: 2rem;
-  /* color: aliceblue; */
+  width: 100%;
 `;
 
-const DebugBox = styled.pre`
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 6px;
-  padding: 12px;
+const ButtonsColumn = styled.div`
+  display: flex;
+  flex-direction: row; /* row for all viewports */
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center; /* center the buttons horizontally */
+  width: 100%;
+  flex-wrap: wrap; /* allow wrap on tiny screens */
+`;
+
+const Button = styled.button`
+  margin: 1.4rem 0 2rem 0;
+  padding: 14px 6.2rem;
+  font-size: 0.95rem;
+  border-radius: 13px;
+  border: none;
+  cursor: pointer;
+  background: #292929ff;
   color: #fff;
-  font-size: 12px;
-  overflow: auto;
-  max-height: 180px;
-  margin-top: 12px;
+  transition: transform 120ms ease, opacity 120ms ease;
+  min-width: 110px;
+
+  /* scale down padding on smaller screens while keeping shape */
+  @media (max-width: 900px) {
+    padding: 10px 2rem;
+  }
+
+  @media (max-width: 420px) {
+    padding: 8px 1.2rem;
+    font-size: 0.85rem;
+  }
 `;
 
 /* ---------- component ---------- */
@@ -100,9 +172,10 @@ export default function ProfileClient({ username }) {
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+
+  // missing states referenced in the effect
   const [error, setError] = useState(null);
+  const [debugMsgs, setDebugMsgs] = useState([]);
 
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
@@ -110,9 +183,12 @@ export default function ProfileClient({ username }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [followLoading, setFollowLoading] = useState(false);
 
-  // UI debug toggle and messages
-  const [debugOpen, setDebugOpen] = useState(false);
-  const [debugMsgs, setDebugMsgs] = useState([]);
+  const {
+    handleOpenComments,
+    handleCloseComments,
+    showCommentModal,
+    selectedPostId,
+  } = OpenCommentWhenImgClicked();
 
   const logDebug = (label, obj) => {
     setDebugMsgs((s) => [...s, `${label}: ${JSON.stringify(obj, null, 2)}`]);
@@ -240,14 +316,12 @@ export default function ProfileClient({ username }) {
         setFollowers(followersCount);
         setFollowing(followingCount);
         setCurrentUser(user);
-        setIsOwnProfile(Boolean(owner));
         setIsFollowing(Boolean(followingRowExists));
         setLoading(false);
       } catch (err) {
         console.error("Profile load error:", err);
         logDebug("Profile load error", err?.message || err);
         if (!mounted) return;
-        setError(err?.message || "Unable to load profile.");
         setLoading(false);
       }
     };
@@ -315,14 +389,7 @@ export default function ProfileClient({ username }) {
   if (error) {
     return (
       <ProfileContainer>
-        <p style={{ color: "#ff6b6b" }}>{error}</p>
-        <button
-          style={{ marginTop: 12 }}
-          onClick={() => setDebugOpen((d) => !d)}
-        >
-          {debugOpen ? "Hide debug" : "Show debug"}
-        </button>
-        {debugOpen && <DebugBox>{debugMsgs.join("\n\n")}</DebugBox>}
+        <p>{error}</p>
       </ProfileContainer>
     );
   }
@@ -339,54 +406,59 @@ export default function ProfileClient({ username }) {
 
   return (
     <ProfileContainer>
-      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
-        <Avatar src={userData.avatarUrl} alt={`${userData.username} avatar`} />
-        <UserInfo>
-          <UsernameRow>
-            <Username>{userData.username}</Username>
+      <ProfileHeader>
+        <Centered>
+          <Avatar src={userData.avatarUrl} alt="Profile Picture" />
 
-            {isOwnProfile ? (
-              <EditButton onClick={() => setShowEditModal(true)}>
-                Edit Profile
-              </EditButton>
-            ) : (
-              <FollowButton
-                onClick={handleToggleFollow}
-                disabled={followLoading}
-              >
-                {followLoading ? "..." : isFollowing ? "Unfollow" : "Follow"}
-              </FollowButton>
+          <UserInfo>
+            <UsernameRow>
+              <Username>{userData.username}</Username>
+            </UsernameRow>
+
+            <DisplayName>{userData.displayName}</DisplayName>
+
+            <StatsRow>
+              <span>{userData.posts.length} posts</span>
+              <span>{userData.followers} followers</span>
+              <span>{userData.following} following</span>
+            </StatsRow>
+          </UserInfo>
+        </Centered>
+
+        <ButtonsColumn>
+          <>
+            {currentUser?.id !== profile.id && (
+              <Button onClick={handleToggleFollow} disabled={followLoading}>
+                {followLoading ? "..." : isFollowing ? "Following" : "Follow"}
+              </Button>
             )}
-          </UsernameRow>
 
-          <StatsRow>
-            <span>{userData.posts.length} posts</span>
-            <span>{userData.followers} followers</span>
-            <span>{userData.following} following</span>
-          </StatsRow>
-
-          <DisplayName>{userData.displayName}</DisplayName>
-        </UserInfo>
-      </div>
+            <Button disabled>Message</Button>
+          </>
+        </ButtonsColumn>
+      </ProfileHeader>
 
       <PostsGrid>
         {userData.posts.length ? (
           userData.posts.map((post) => (
-            <PostItem
-              key={post.id}
-              src={post.media_url || "/placeholder.png"}
-              alt={post.caption || "Post"}
-            />
+            <HoverContainer key={post.id} overlayContent={<CommentAndLike />}>
+              <PostItem
+                onClick={() => handleOpenComments(post.id)}
+                key={post.id}
+                src={post.media_url || "/placeholder.png"}
+                alt={post.caption || "Post"}
+              />
+            </HoverContainer>
           ))
         ) : (
           <p>user has not posted any images</p>
         )}
       </PostsGrid>
 
-      {showEditModal && (
-        <Modal onClose={() => setShowEditModal(false)}>
-          <EditProfile onClose={() => setShowEditModal(false)} />
-        </Modal>
+      {showCommentModal && (
+        <CommentandLikeModal onClose={handleCloseComments}>
+          <ClickedOnCommentSty selectedPostId={selectedPostId} />
+        </CommentandLikeModal>
       )}
     </ProfileContainer>
   );

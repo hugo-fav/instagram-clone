@@ -3,6 +3,7 @@ import Image from "next/image";
 import styled from "styled-components";
 
 const PostWrapper = styled.div`
+  cursor: pointer;
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -16,13 +17,19 @@ const PostWrapper = styled.div`
   font-size: 14px;
 `;
 
-export default function PostItem({ src, alt }) {
+export default function PostItem({ src, alt, onClick }) {
   if (!src) {
-    return <PostWrapper>No image</PostWrapper>; // fallback UI
+    return <PostWrapper>No image</PostWrapper>;
   }
 
   return (
-    <PostWrapper>
+    <PostWrapper
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick?.()}
+      style={{ width: "100%", height: "100%" }}
+    >
       <Image
         src={src}
         alt={alt || "Post image"}

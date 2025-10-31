@@ -4,6 +4,11 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import styled from "styled-components";
 import { supabase } from "@/libs/supabseClient";
 import { useEffect, useState } from "react";
+import CommentandLikeModal from "@/components/commentsandlikesonpost/CommentandLikeModal";
+import ClickedOnCommentSty from "@/components/commentsandlikesonpost/clickedoncomment/ClickedOnCommentSty";
+import OpenCommentWhenImgClicked from "@/components/commentsandlikesonpost/OpenCommentWhenImgClicked";
+import HoverContainer from "@/components/HoverContainer";
+import CommentAndLike from "@/components/commentsandlikesonpost/CommentandLike";
 
 const FeedWrapper = styled.div`
   column-count: 3;
@@ -34,6 +39,7 @@ const PostCard = styled.div`
 `;
 
 const PostImage = styled.img`
+  cursor: pointer;
   width: 100%;
   object-fit: cover;
   display: block;
@@ -43,6 +49,13 @@ export default function Page() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const {
+    handleOpenComments,
+    handleCloseComments,
+    showCommentModal,
+    selectedPostId,
+  } = OpenCommentWhenImgClicked();
 
   useEffect(() => {
     const fetchRandomPosts = async () => {
@@ -83,10 +96,22 @@ export default function Page() {
   return (
     <FeedWrapper>
       {posts.map((post) => (
-        <PostCard key={post.id}>
-          <PostImage src={post.media_url} alt={post.caption || "post"} />
-        </PostCard>
+        <HoverContainer key={post.id} overlayContent={<CommentAndLike />}>
+          <PostCard key={post.id}>
+            <PostImage
+              onClick={() => handleOpenComments(post.id)}
+              src={post.media_url}
+              alt={post.caption || "post"}
+            />
+          </PostCard>
+        </HoverContainer>
       ))}
+
+      {showCommentModal && (
+        <CommentandLikeModal onClose={handleCloseComments}>
+          <ClickedOnCommentSty selectedPostId={selectedPostId} />
+        </CommentandLikeModal>
+      )}
     </FeedWrapper>
   );
 }
