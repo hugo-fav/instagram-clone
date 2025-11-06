@@ -33,14 +33,9 @@ const Container = styled.div`
   padding: 1rem;
 
   @media (max-width: 1204px) {
-    flex-direction: column;
+    /* flex-direction: column; */
     height: 90vh;
     width: 100%;
-  }
-
-  @media (max-width: 820px) {
-    flex-direction: column;
-    height: 90vh;
   }
 `;
 
@@ -54,6 +49,10 @@ const LeftPane = styled.div`
   background: #000;
   /* border-radius: 12px; */
   overflow: hidden;
+
+  @media (max-width: 690px) {
+    display: none;
+  }
 `;
 
 const RightPane = styled.div`
@@ -64,7 +63,7 @@ const RightPane = styled.div`
   flex-direction: column;
   background: #072631ff;
   border-radius: 0 12px 12px 0;
-  overflow: hidden;
+  overflow: auto;
 
   @media (max-width: 1024px) {
     border-radius: 0 0 12px 12px;

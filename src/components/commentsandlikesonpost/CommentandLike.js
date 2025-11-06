@@ -102,11 +102,11 @@ export default function CommentAndLike({ postId }) {
         onClick={handleLikes}
         style={{ color: hasLiked ? "red" : "#333" }}
       >
-        <Heart /> {likes.length}
+        <Heart size={20} /> {likes.length}
       </Button>
 
       <Button onClick={handleOpenComments}>
-        <MessageCircle /> {comments.length}
+        <MessageCircle size={20} /> {comments.length}
       </Button>
 
       {showModal && selectedPostId && (
@@ -120,9 +120,10 @@ export default function CommentAndLike({ postId }) {
 
 // ---------- Styles ----------
 const Container = styled.div`
+  padding: 0 1rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.4rem;
   margin-top: 1rem;
 `;
 

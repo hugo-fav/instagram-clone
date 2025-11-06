@@ -118,9 +118,9 @@ export default function CommentModal({ imgId }) {
 
   return (
     <Container>
-      <Header>
+      {/* <Header>
         <Title>Comments</Title>
-      </Header>
+      </Header> */}
 
       <CommentsList ref={commentsRef}>
         {loading ? (
@@ -164,27 +164,20 @@ export default function CommentModal({ imgId }) {
 
 /* Styles */
 const Container = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 100%; /* fill modal body height */
   box-sizing: border-box;
   padding: 1rem;
   color: #d8e3e6;
+  overflow-y: auto; /* IMPORTANT: prevent modal from scrolling — let CommentsList scroll */
 `;
 
-const Header = styled.div`
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-`;
-
-const Title = styled.h3`
-  margin: 0;
-  font-size: 1.05rem;
-`;
-
+/* keep CommentsList as the scrollable area */
 const CommentsList = styled.div`
   flex: 1 1 auto;
-  overflow-y: auto;
+  overflow-y: hidden;
   margin-top: 0.75rem;
   padding-right: 0.25rem;
 `;

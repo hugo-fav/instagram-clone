@@ -15,6 +15,7 @@ const Container = styled.div`
   font-size: 18px;
   gap: 0;
   width: 100%;
+  padding-bottom: 3rem;
 `;
 
 const HomeSug = styled.div`
@@ -52,18 +53,25 @@ const PostWrapper = styled.div`
 `;
 
 const PostHeader = styled.div`
+  padding: 0 0.9rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 7px;
 `;
 
 const Avatar = styled(Image)`
   border-radius: 50%;
 `;
+const Username = styled.span`
+  font-weight: 600;
+  font-size: 14px;
+  /* color: #262626; */
+`;
 
 const PostImage = styled(Image)`
   border: 1px solid #292929ff;
-  padding: 1rem;
+  border-radius: 8px;
+  /* padding: 1rem; */
   margin-top: 14px;
   object-fit: contain;
   width: 100%;
@@ -132,15 +140,15 @@ export default function Page() {
                     width={30}
                     height={30}
                   />
-                  <strong>{post.username}</strong> ({post.displayName})
+                  <Username>{post.username}</Username>
                 </PostHeader>
-                <div>{post.caption}</div>
                 <PostImage
                   src={post.mediaUrl}
                   alt="post"
                   width={300}
                   height={300}
                 />
+                <div>{post.caption}</div>
                 <CommentAndLike postId={post.id} />
               </PostWrapper>
             ))}
